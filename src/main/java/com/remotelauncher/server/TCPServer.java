@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.server;
 
+import com.remotelauncher.Constants;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,19 +15,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
-import java.util.UUID;
 
 public class TCPServer {
 
     public void runServer() {
         ServerSocket serverSocket = null;
+        System.out.println("SERVER IS STARTING...");
         try {
-            serverSocket = new ServerSocket(81);
+            serverSocket = new ServerSocket(Constants.PORT_NUMBER);
+            System.out.println("SERVER HAS STARTED.");
         } catch (IOException ex) {
+            System.out.println("SERVER START HAS FAILED!");
             ex.printStackTrace();
             System.exit(0);
         }
         ClientsData clientsData = ClientsData.singleton;
+        System.out.printf("====\nLISTENING FOR PORT %d...\n", Constants.PORT_NUMBER);
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
@@ -33,16 +38,21 @@ public class TCPServer {
                 DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
 
                 String token = dataInputStream.readUTF();
-                System.out.printf("New client with token: %s\n", token);
+                System.out.printf("CLIENT WITH TOKEN %s WAS CONNECTED.\n", token);
                 Integer userId = token.hashCode();
-                if (ClientsData.getData(userId.toString()) == null) {
+                Object clientData = ClientsData.getData(userId.toString());
+                if (clientData == null) {
                     WorkThread workThread = new WorkThread();
                     long workThreadID = workThread.getId();
+                    System.out.printf("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
                     ClientsData.setData(userId.toString(), workThreadID);
                 }
                 else {
+                    long workThreadID = (long) clientData;
+                    System.out.printf("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
                     // TODO: send queue status to client
                 }
+                System.out.println("----\nLOOKING FOR NEW CLIENTS...");
 
                 /*BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String GET = bufferedReader.readLine();

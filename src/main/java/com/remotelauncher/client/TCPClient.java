@@ -16,7 +16,7 @@ public class TCPClient {
             Socket clientSocket = new Socket("localhost", 81);
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
-            String token = "usersToken!";
+            String token = "usersToken";
             outputStream.writeUTF(token);
             outputStream.flush();
             System.out.println("Connection was established.");
