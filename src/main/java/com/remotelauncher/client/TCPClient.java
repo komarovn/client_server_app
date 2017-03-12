@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client;
 
+import com.remotelauncher.Constants;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import javafx.application.Application;
 
@@ -16,7 +17,7 @@ public class TCPClient {
 
     public void runClient() {
         try {
-            Socket clientSocket = new Socket("localhost", 81);
+            Socket clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
             String token = "usersToken";
