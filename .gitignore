@@ -5,7 +5,7 @@
 
 #IntelliJIDEA configs
 .idea/
-.target/
+target/
 
 # Log file 
 *.log 
