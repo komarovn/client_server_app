@@ -30,7 +30,6 @@ public class ClientsDataTable {
 
     public static ClientData getData(String key) {
         return (ClientData)singleton.data.get(key);
-        // TODO: Is it normal to cast object to ClientData? Delete that comment if it's ok
     }
 
 }

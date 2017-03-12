@@ -6,18 +6,19 @@
  */
 package com.remotelauncher.server;
 
-public class ClientData extends Object {
+public class ClientData {
 
     private long workThreadId;
 
-    public ClientData(long _workThreadId) {
-        workThreadId = _workThreadId;
+    public ClientData(long workThreadId) {
+        this.workThreadId = workThreadId;
     }
+
     public long getWorkThreadId(){
         return workThreadId;
     }
-    public void setWorkThreadId(long _workThreadId) {
-        workThreadId = _workThreadId;
-        return;
+
+    public void setWorkThreadId(long workThreadId) {
+        this.workThreadId = workThreadId;
     }
 }
