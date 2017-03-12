@@ -1,8 +1,11 @@
+/*
+ * REMOTE TASK LAUNCHER
+ *
+ * Developed by Nikolay Komarov and Rostislav Povelikin
+ * UNN, 2017
+ */
 package com.remotelauncher.client;
 
-/**
- * Created by User on 12.03.2017.
- */
 public class ClientEntryPoint {
 
     public static void main(String[] args) {

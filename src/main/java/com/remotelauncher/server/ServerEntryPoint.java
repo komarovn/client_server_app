@@ -4,11 +4,9 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher;
+package com.remotelauncher.server;
 
-import com.remotelauncher.server.TCPServer;
-
-public class EntryPoint {
+public class ServerEntryPoint {
 
     public static void main(String[] args) {
         TCPServer tcpServer = new TCPServer();
