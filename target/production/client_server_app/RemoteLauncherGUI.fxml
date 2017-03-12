@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   REMOTE TASK LAUNCHER
+
+   Developed by Nikolay Komarov and Rostislav Povelikin
+   UNN, 2017
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Pane?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="443.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button layoutX="309.0" layoutY="209.0" mnemonicParsing="false" text="Button" />
+   </children>
+</Pane>

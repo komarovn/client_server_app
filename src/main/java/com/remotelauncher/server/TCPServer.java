@@ -11,10 +11,6 @@ import com.remotelauncher.Constants;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.StringTokenizer;
 
 public class TCPServer {
 
@@ -29,7 +25,7 @@ public class TCPServer {
             ex.printStackTrace();
             System.exit(0);
         }
-        ClientsData clientsData = ClientsData.singleton;
+        ClientsDataTable clientsDataTable = ClientsDataTable.singleton;
         System.out.printf("====\nLISTENING FOR PORT %d...\n", Constants.PORT_NUMBER);
         while (true) {
             try {
@@ -40,15 +36,16 @@ public class TCPServer {
                 String token = dataInputStream.readUTF();
                 System.out.printf("CLIENT WITH TOKEN %s WAS CONNECTED.\n", token);
                 Integer userId = token.hashCode();
-                Object clientData = ClientsData.getData(userId.toString());
+                ClientData clientData = ClientsDataTable.getData(userId.toString());
                 if (clientData == null) {
                     WorkThread workThread = new WorkThread();
                     long workThreadID = workThread.getId();
+                    clientData = new ClientData(workThreadID);
                     System.out.printf("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
-                    ClientsData.setData(userId.toString(), workThreadID);
+                    ClientsDataTable.setData(userId.toString(), clientData);
                 }
                 else {
-                    long workThreadID = (long) clientData;
+                    long workThreadID = (long) clientData.getWorkThreadId();
                     System.out.printf("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
                     // TODO: send queue status to client
                 }
