@@ -42,11 +42,6 @@ public class WorkThread extends Thread {
     private void sendMessage(String message){
         try {
             outputStream.writeUTF(message);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        try {
             outputStream.flush();
         }
         catch (Exception e){
