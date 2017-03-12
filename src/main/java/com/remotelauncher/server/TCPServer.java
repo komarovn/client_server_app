@@ -38,7 +38,8 @@ public class TCPServer {
                 Integer userId = token.hashCode();
                 ClientData clientData = ClientsDataTable.getData(userId.toString());
                 if (clientData == null) {
-                    WorkThread workThread = new WorkThread();
+                    WorkThread workThread = new WorkThread(clientsDataTable, userId.toString(), clientSocket);
+                    workThread.run();
                     long workThreadID = workThread.getId();
                     clientData = new ClientData(workThreadID);
                     System.out.printf("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);

@@ -10,6 +10,7 @@ import com.remotelauncher.Constants;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import javafx.application.Application;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
@@ -24,6 +25,9 @@ public class TCPClient {
             outputStream.writeUTF(token);
             outputStream.flush();
             System.out.println("Connection was established.");
+
+            DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
+            System.out.printf(inputStream.readUTF());
 
             Application.launch(RemoteLauncher.class);
 
