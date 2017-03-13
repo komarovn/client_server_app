@@ -8,7 +8,7 @@ package com.remotelauncher.server;
 
 public class ServerThread extends Thread {
 
-    public void stopServer() {
+    public synchronized void stopServer() {
         stop();
     }
 

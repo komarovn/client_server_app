@@ -8,6 +8,6 @@ package com.remotelauncher.client;
 
 public class ClientThread extends Thread {
 
-    
+
 
 }
