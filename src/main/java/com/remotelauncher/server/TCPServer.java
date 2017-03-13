@@ -30,7 +30,9 @@ public class TCPServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
+                ClientThread connection = new ClientThread(clientSocket);
 
+                // TODO: transfer next code to ClientThread
                 DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
 
                 String token = dataInputStream.readUTF();
