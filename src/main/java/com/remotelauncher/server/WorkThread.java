@@ -19,19 +19,13 @@ public class WorkThread extends Thread {
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
 
-    public WorkThread(ClientsDataTable _clientsDataTable, String _userId, Socket _socket) {
-        clientsDataTable = _clientsDataTable;
-        clientSocket = _socket;
-        userId = _userId;
+    public WorkThread(ClientsDataTable clientsDataTable, String userId, Socket socket) {
+        this.clientsDataTable = clientsDataTable;
+        this.clientSocket = socket;
+        this.userId = userId;
 
         try {
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        try {
             inputStream = new DataInputStream(clientSocket.getInputStream());
         }
         catch (Exception e){
