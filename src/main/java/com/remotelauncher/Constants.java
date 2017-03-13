@@ -9,6 +9,6 @@ package com.remotelauncher;
 public abstract class Constants {
 
     public static final String SERVER_NAME = "localhost";
-    public static final int PORT_NUMBER = 81;
+    public static final int PORT_NUMBER = 59342;
 
 }
