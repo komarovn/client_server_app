@@ -6,7 +6,6 @@
  */
 package com.remotelauncher.server;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -33,7 +32,7 @@ public class WorkThread extends Thread {
         }
     }
 
-    private void sendMessage(String message){
+    private void sendMessage(String message) {
         try {
             outputStream.writeUTF(message);
             outputStream.flush();
@@ -44,7 +43,7 @@ public class WorkThread extends Thread {
     }
 
     @Override
-    public void run(){
+    public void run() {
         String helloMessage = "Hello, I'm here to work with you " + userId;
         sendMessage(helloMessage);
     }
