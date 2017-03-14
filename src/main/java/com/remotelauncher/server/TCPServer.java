@@ -29,7 +29,7 @@ public class TCPServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                ClientThread connection = new ClientThread(clientSocket);
+                WorkThread connection = new WorkThread(clientSocket);
                 connection.run();
                 System.out.println("----\nLOOKING FOR NEW CLIENTS...");
             } catch (Exception ex) {

@@ -15,14 +15,14 @@ import java.net.Socket;
  * Client (work) thread operates with one exact client. For N clients there will be N client threads. It provides
  * processing of the request and creating data for response.
  */
-public class ClientThread extends Thread {
+public class WorkThread extends Thread {
 
     private Socket clientSocket;
     private Integer userId; // Should be a String
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
 
-    public ClientThread(Socket clientSocket) {
+    public WorkThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
