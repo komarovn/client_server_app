@@ -6,6 +6,9 @@
  */
 package com.remotelauncher.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,6 +19,8 @@ import java.net.Socket;
  * processing of the request and creating data for response.
  */
 public class WorkThread extends Thread {
+
+    private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
 
     private Socket clientSocket;
     private Integer userId; // Should be a String
@@ -38,20 +43,20 @@ public class WorkThread extends Thread {
         try {
             DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
             String token = dataInputStream.readUTF();
-            System.out.printf("CLIENT WITH TOKEN %s WAS CONNECTED.\n", token);
+            LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
             userId = token.hashCode();
             ClientData clientData = ClientsDataTable.getData(userId.toString());
             if (clientData == null) {
                 long workThreadID = getId();
                 clientData = new ClientData(workThreadID);
-                System.out.printf("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
+                LOGGER.info("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: {}", workThreadID);
                 ClientsDataTable.setData(userId.toString(), clientData);
                 String helloMessage = "Hello, I'm here to work with you " + userId;
                 sendMessage(helloMessage);
             }
             else {
                 long workThreadID = (long) clientData.getWorkThreadId();
-                System.out.printf("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
+                LOGGER.info("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS WORK THREAD ID: {} \n", workThreadID);
                 // TODO: send queue status to client
             }
         } catch (IOException e) {

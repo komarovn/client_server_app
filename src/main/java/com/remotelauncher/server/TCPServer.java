@@ -7,6 +7,8 @@
 package com.remotelauncher.server;
 
 import com.remotelauncher.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -14,32 +16,30 @@ import java.net.Socket;
 
 public class TCPServer {
 
+    private Logger LOGGER = LoggerFactory.getLogger(TCPServer.class);
+
     public void runServer() {
         ServerSocket serverSocket = null;
-        System.out.println("SERVER IS STARTING...");
+        LOGGER.info("SERVER IS STARTING...");
         try {
             serverSocket = new ServerSocket(Constants.PORT_NUMBER);
-            System.out.println("SERVER HAS STARTED.");
+            LOGGER.info("SERVER HAS STARTED.");
         } catch (IOException ex) {
-            System.out.println("SERVER START HAS FAILED!");
+            LOGGER.info("SERVER START HAS FAILED!");
             ex.printStackTrace();
             System.exit(0);
         }
-        System.out.printf("====\nLISTENING FOR PORT %d...\n", Constants.PORT_NUMBER);
+        LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 WorkThread connection = new WorkThread(clientSocket);
                 connection.run();
-                System.out.println("----\nLOOKING FOR NEW CLIENTS...");
+                LOGGER.info("---- LOOKING FOR NEW CLIENTS...");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-    }
-
-    public void processResponse() {
-
     }
 
 }
