@@ -46,7 +46,7 @@ public class TCPClient {
     private void createRequest(DataOutputStream outputStream) {
         // TODO: create a some structure 'Request' for store request data
         // so, there will be method which encode object of 'Request' into output stream
-        String token = "usersToken";
+        String token = "usersTokenopopo";
         try {
             outputStream.writeUTF(token);
         } catch (IOException e) {

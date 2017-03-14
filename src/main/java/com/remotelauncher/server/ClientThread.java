@@ -7,20 +7,30 @@
 package com.remotelauncher.server;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Client thread operates with one exact client. For N clients there will be N client threads. It provides processing
- * of the request and creating data for response.
+ * Client (work) thread operates with one exact client. For N clients there will be N client threads. It provides
+ * processing of the request and creating data for response.
  */
 public class ClientThread extends Thread {
-    // Probably WorkThread should be transferred here
 
     private Socket clientSocket;
+    private Integer userId; // Should be a String
+    private DataOutputStream outputStream;
+    private DataInputStream inputStream;
 
     public ClientThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
+        try {
+            outputStream = new DataOutputStream(clientSocket.getOutputStream());
+            inputStream = new DataInputStream(clientSocket.getInputStream());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -29,15 +39,15 @@ public class ClientThread extends Thread {
             DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
             String token = dataInputStream.readUTF();
             System.out.printf("CLIENT WITH TOKEN %s WAS CONNECTED.\n", token);
-            Integer userId = token.hashCode();
+            userId = token.hashCode();
             ClientData clientData = ClientsDataTable.getData(userId.toString());
             if (clientData == null) {
-                WorkThread workThread = new WorkThread(ClientsDataTable.singleton, userId.toString(), clientSocket);
-                workThread.run();
-                long workThreadID = workThread.getId();
+                long workThreadID = getId();
                 clientData = new ClientData(workThreadID);
                 System.out.printf("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: %s \n", workThreadID);
                 ClientsDataTable.setData(userId.toString(), clientData);
+                String helloMessage = "Hello, I'm here to work with you " + userId;
+                sendMessage(helloMessage);
             }
             else {
                 long workThreadID = (long) clientData.getWorkThreadId();
@@ -47,6 +57,15 @@ public class ClientThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void sendMessage(String message) {
+        try {
+            outputStream.writeUTF(message);
+            outputStream.flush();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
