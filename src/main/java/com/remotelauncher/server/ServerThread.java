@@ -12,6 +12,11 @@ package com.remotelauncher.server;
 public class ServerThread extends Thread {
 
     public synchronized void stopServer() {
+        Thread[] threads = new Thread[currentThread().getThreadGroup().activeCount()];
+        currentThread().getThreadGroup().enumerate(threads);
+        for (Thread thread : threads) {
+            thread.stop();
+        }
         stop();
     }
 
