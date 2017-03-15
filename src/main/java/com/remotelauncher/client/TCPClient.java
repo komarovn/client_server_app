@@ -19,14 +19,18 @@ public class TCPClient {
     private Socket clientSocket;
     private Boolean isConnected;
     private String token;
+    private DataOutputStream outputStream;
+    private DataInputStream inputStream;
 
     public void runClient() {
         try {
             try {
                 clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
                 isConnected = true;
+                outputStream = new DataOutputStream(clientSocket.getOutputStream());
+                inputStream = new DataInputStream(clientSocket.getInputStream());
+
                 System.out.println("Connection established.");
-                process();
             }
             catch (ConnectException e) {
                 isConnected = false;
@@ -40,7 +44,6 @@ public class TCPClient {
 
     public void process() {
         try {
-            DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
             createRequest(outputStream);
 
@@ -49,11 +52,7 @@ public class TCPClient {
 
             // --- Server is processing request here ---
 
-            DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
-            //processResponse(inputStream);
-
-            outputStream.close();
-            inputStream.close();
+            processResponse(inputStream);
         }
         catch (Exception e) {
             e.printStackTrace();
