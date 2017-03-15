@@ -19,27 +19,12 @@ public class TCPServer {
     private Logger LOGGER = LoggerFactory.getLogger(TCPServer.class);
 
     public void runServer() {
-        ServerSocket serverSocket = null;
-        LOGGER.info("SERVER IS STARTING...");
-        try {
-            serverSocket = new ServerSocket(Constants.PORT_NUMBER);
-            LOGGER.info("SERVER HAS STARTED.");
-        } catch (IOException ex) {
-            LOGGER.info("SERVER START HAS FAILED!");
-            ex.printStackTrace();
-            System.exit(0);
-        }
-        LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
-        while (true) {
-            try {
-                Socket clientSocket = serverSocket.accept();
-                WorkThread connection = new WorkThread(clientSocket);
-                connection.run();
-                LOGGER.info("---- LOOKING FOR NEW CLIENTS...");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+        //TODO: Add server side UI frame in main thread.
+        //TODO: Via button START SERVER on UI will be created and started ServerThread
+        //TODO: Pass via UI port to listen and edit ServerThread constructor and fields to store the port
+        //TODO: Call server.stopServer() from the UI by clicking 'STOP SERVER'
+        ServerThread server = new ServerThread(LOGGER);
+        server.start();
     }
 
 }
