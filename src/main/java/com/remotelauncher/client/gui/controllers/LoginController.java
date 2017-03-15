@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.client.gui.RemoteLauncher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,13 +25,24 @@ public class LoginController implements Initializable {
     @FXML
     private Button exitButton;
 
+    @FXML
+    private TextField tokenTextfield;
+
+    @FXML
+    private Label serverUnavailable;
+
+    private RemoteLauncher mainApp;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        assert connectButton != null : "Login Button is not defined";
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 // TODO: open main app form
+                if (!tokenTextfield.getText().isEmpty()) {
+                    String token = tokenTextfield.getText();
+                    mainApp.setToken(token);
+                }
             }
         });
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -40,6 +52,16 @@ public class LoginController implements Initializable {
                 System.exit(0);
             }
         });
+    }
+
+    public void setStatusConnection(boolean isConnected) {
+        serverUnavailable.setVisible(!isConnected);
+        connectButton.setDisable(!isConnected);
+        tokenTextfield.setDisable(!isConnected);
+    }
+
+    public void setMainApp(RemoteLauncher mainApp) {
+        this.mainApp = mainApp;
     }
 
 }

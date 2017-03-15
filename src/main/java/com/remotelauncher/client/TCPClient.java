@@ -13,15 +13,28 @@ import javafx.application.Application;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class TCPClient {
 
+    private Boolean isConnected;
+
     public void runClient() {
         try {
-            Socket clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
+            Socket clientSocket = null;
+            try {
+                clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
+                isConnected = true;
+                System.out.println("Connection established.");
+            }
+            catch (ConnectException e) {
+                isConnected = false;
+                System.out.println("Connection refused.");
+            }
+            Application.launch(RemoteLauncher.class, isConnected.toString());
+
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
-            System.out.println("Connection was established.");
 
             createRequest(outputStream);
 
@@ -32,8 +45,6 @@ public class TCPClient {
 
             DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
             processResponse(inputStream);
-
-            Application.launch(RemoteLauncher.class);
 
             outputStream.close();
             inputStream.close();

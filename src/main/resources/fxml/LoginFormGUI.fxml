@@ -35,5 +35,6 @@
             <Font size="15.0" />
          </font>
       </Button>
+      <Label fx:id="serverUnavailable" layoutX="184.0" layoutY="109.0" text="Server is unavailable now" textAlignment="CENTER" />
    </children>
 </Pane>
