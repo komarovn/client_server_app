@@ -19,15 +19,15 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
 
     @FXML
-    private Button loginButton;
+    private Button connectButton;
 
     @FXML
     private Button exitButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        assert loginButton != null : "Login Button is not defined";
-        loginButton.setOnAction(new EventHandler<ActionEvent>() {
+        assert connectButton != null : "Login Button is not defined";
+        connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 // TODO: open main app form
