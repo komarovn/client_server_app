@@ -23,15 +23,16 @@ public class WorkThread extends Thread {
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
 
     private Socket clientSocket;
-    private Integer userId; // Should be a String
+    private String userId;
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
 
-    public WorkThread(Socket clientSocket) {
+    public WorkThread(Socket clientSocket, String userId) {
         this.clientSocket = clientSocket;
+        this.userId = userId;
         try {
-            outputStream = new DataOutputStream(clientSocket.getOutputStream());
-            inputStream = new DataInputStream(clientSocket.getInputStream());
+            outputStream = new DataOutputStream(this.clientSocket.getOutputStream());
+            inputStream = new DataInputStream(this.clientSocket.getInputStream());
         }
         catch (Exception e){
             e.printStackTrace();
@@ -40,28 +41,8 @@ public class WorkThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            String token = dataInputStream.readUTF();
-            LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
-            userId = token.hashCode();
-            ClientData clientData = ClientsDataTable.getData(userId.toString());
-            if (clientData == null) {
-                long workThreadID = getId();
-                clientData = new ClientData(workThreadID);
-                LOGGER.info("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: {}", workThreadID);
-                ClientsDataTable.setData(userId.toString(), clientData);
-                String helloMessage = "Hello, I'm here to work with you " + userId;
-                sendMessage(helloMessage);
-            }
-            else {
-                long workThreadID = (long) clientData.getWorkThreadId();
-                LOGGER.info("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS WORK THREAD ID: {} \n", workThreadID);
-                // TODO: send queue status to client
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String helloMessage = "Hello, I'm here to work with you " + userId;
+        sendMessage(helloMessage);
     }
 
     private void sendMessage(String message) {
