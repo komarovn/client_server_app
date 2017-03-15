@@ -16,22 +16,30 @@ import java.net.Socket;
 
 public class TCPClient {
 
+    private Socket clientSocket;
     private Boolean isConnected;
     private String token;
 
     public void runClient() {
         try {
-            Socket clientSocket = null;
             try {
                 clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
                 isConnected = true;
                 System.out.println("Connection established.");
+                process();
             }
             catch (ConnectException e) {
                 isConnected = false;
                 System.out.println("Connection refused.");
             }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void process() {
+        try {
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
             createRequest(outputStream);

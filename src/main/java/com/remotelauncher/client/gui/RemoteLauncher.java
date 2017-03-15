@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import javafx.application.Application;
@@ -32,6 +33,7 @@ public class RemoteLauncher extends Application {
         URL address = getClass().getResource("/fxml/LoginFormGUI.fxml");
         FXMLLoader loader = new FXMLLoader(address);
         Parent root = loader.load();
+        primaryStage.setTitle(StringResourses.REMOTE_LAUNCHER);
         primaryStage.setScene(new Scene(root));
         LoginController controller = loader.getController();
         controller.setMainApp(this);
@@ -45,5 +47,9 @@ public class RemoteLauncher extends Application {
     public void setToken(String token) {
         this.token = token;
         tcpClient.setToken(token);
+    }
+
+    public void process() {
+        tcpClient.process();
     }
 }

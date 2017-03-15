@@ -42,6 +42,7 @@ public class LoginController implements Initializable {
                 if (!tokenTextfield.getText().isEmpty()) {
                     String token = tokenTextfield.getText();
                     mainApp.setToken(token);
+                    mainApp.process();
                 }
             }
         });
