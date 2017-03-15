@@ -14,16 +14,38 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
  */
+
 public class ServerThread extends Thread {
 
     private Logger LOGGER;
 
     public ServerThread(Logger LOGGER) {
         this.LOGGER = LOGGER;
+    }
+
+    private static ThreadGroup getRootThreadGroup(Thread thread) {
+        ThreadGroup rootGroup = thread.getThreadGroup();
+        while (rootGroup.getParent() != null) {
+            rootGroup = rootGroup.getParent();
+        }
+        return rootGroup;
+    }
+
+    public WorkThread getWorkThread(long workThreadId){
+        ThreadGroup rootThreadGroup = getRootThreadGroup(Thread.currentThread());
+        Thread[] threads = new Thread[rootThreadGroup.activeCount()];
+        rootThreadGroup.enumerate(threads);
+        for (Thread tmp : threads) {
+            if (tmp.getId() == workThreadId) {
+                return (WorkThread) tmp;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -47,17 +69,28 @@ public class ServerThread extends Thread {
                 LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
                 String userId = Integer.toString(token.hashCode());
                 ClientData clientData = ClientsDataTable.getData(userId);
+                WorkThread workThread = new WorkThread(clientSocket, token);
+                if (!workThread.isDaemon()){
+                    workThread.setDaemon(true);
+                }
                 if (clientData == null) {
-                    WorkThread workThread = new WorkThread(clientSocket, userId);
-                    long workThreadID = workThread.getId();
-                    clientData = new ClientData(workThreadID);
-                    LOGGER.info("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: {}", workThreadID);
+                    long workThreadId = workThread.getId();
+                    clientData = new ClientData(workThreadId);
+                    LOGGER.info("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: {}", workThreadId);
                     ClientsDataTable.setData(userId, clientData);
-                    workThread.run();
+                    workThread.start();
                 }
                 else {
-                    long workThreadID = (long) clientData.getWorkThreadId();
-                    LOGGER.info("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS WORK THREAD ID: {} \n", workThreadID);
+                    long workThreadId = (long) clientData.getWorkThreadId();
+                    LOGGER.info("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS WORK THREAD ID: {} \n", workThreadId);
+                    workThread = getWorkThread(workThreadId);
+                    if (workThread != null) {
+                        LOGGER.info("WE FOUND CLIENT THREAD");
+                    }
+                    else{
+                        LOGGER.info("SOMETHING IS GOING WRONG...");
+                    }
+
                     // TODO: send queue status to client
                 }
                 LOGGER.info("---- LOOKING FOR NEW CLIENTS...");

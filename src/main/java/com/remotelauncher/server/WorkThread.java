@@ -21,7 +21,6 @@ import java.net.Socket;
 public class WorkThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
-
     private Socket clientSocket;
     private String userId;
     private DataOutputStream outputStream;
@@ -41,9 +40,17 @@ public class WorkThread extends Thread {
 
     @Override
     public void run() {
-        String helloMessage = "Hello, I'm here to work with you " + userId;
-        sendMessage(helloMessage);
+        String wellcomeMessage = "Hello, I'm here to work with you " + userId;
+        sendMessage(wellcomeMessage);
+        while (true) {
+            try {
+                sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
     private void sendMessage(String message) {
         try {
