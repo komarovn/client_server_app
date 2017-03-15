@@ -7,21 +7,40 @@
 package com.remotelauncher.client;
 
 import com.remotelauncher.Constants;
-import com.remotelauncher.client.gui.RemoteLauncher;
-import javafx.application.Application;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class TCPClient {
 
+    private Socket clientSocket;
+    private Boolean isConnected;
+    private String token;
+
     public void runClient() {
         try {
-            Socket clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
+            try {
+                clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
+                isConnected = true;
+                System.out.println("Connection established.");
+                process();
+            }
+            catch (ConnectException e) {
+                isConnected = false;
+                System.out.println("Connection refused.");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void process() {
+        try {
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
-            System.out.println("Connection was established.");
 
             createRequest(outputStream);
 
@@ -31,9 +50,7 @@ public class TCPClient {
             // --- Server is processing request here ---
 
             DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
-            processResponse(inputStream);
-
-            Application.launch(RemoteLauncher.class);
+            //processResponse(inputStream);
 
             outputStream.close();
             inputStream.close();
@@ -46,9 +63,10 @@ public class TCPClient {
     private void createRequest(DataOutputStream outputStream) {
         // TODO: create a some structure 'Request' for store request data
         // so, there will be method which encode object of 'Request' into output stream
-        String token = "usersTokenopopo";
         try {
-            outputStream.writeUTF(token);
+            if (token != null) {
+                outputStream.writeUTF(token);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,4 +82,11 @@ public class TCPClient {
         }
     }
 
+    public Boolean getConnected() {
+        return isConnected;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
