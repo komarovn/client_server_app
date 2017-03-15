@@ -7,8 +7,6 @@
 package com.remotelauncher.client;
 
 import com.remotelauncher.Constants;
-import com.remotelauncher.client.gui.RemoteLauncher;
-import javafx.application.Application;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -19,6 +17,7 @@ import java.net.Socket;
 public class TCPClient {
 
     private Boolean isConnected;
+    private String token;
 
     public void runClient() {
         try {
@@ -32,7 +31,6 @@ public class TCPClient {
                 isConnected = false;
                 System.out.println("Connection refused.");
             }
-            Application.launch(RemoteLauncher.class, isConnected.toString());
 
             DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
@@ -44,7 +42,7 @@ public class TCPClient {
             // --- Server is processing request here ---
 
             DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
-            processResponse(inputStream);
+            //processResponse(inputStream);
 
             outputStream.close();
             inputStream.close();
@@ -57,9 +55,10 @@ public class TCPClient {
     private void createRequest(DataOutputStream outputStream) {
         // TODO: create a some structure 'Request' for store request data
         // so, there will be method which encode object of 'Request' into output stream
-        String token = "usersTokenopopo";
         try {
-            outputStream.writeUTF(token);
+            if (token != null) {
+                outputStream.writeUTF(token);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,4 +74,11 @@ public class TCPClient {
         }
     }
 
+    public Boolean getConnected() {
+        return isConnected;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

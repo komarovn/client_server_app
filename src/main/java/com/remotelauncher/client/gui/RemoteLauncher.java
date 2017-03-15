@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.client.TCPClient;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,8 +18,14 @@ import java.net.URL;
 
 public class RemoteLauncher extends Application {
 
+    private TCPClient tcpClient;
     private Boolean isConnected = false;
     private String token;
+
+    public RemoteLauncher() {
+        tcpClient = new TCPClient();
+        tcpClient.runClient();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -29,10 +36,7 @@ public class RemoteLauncher extends Application {
         LoginController controller = loader.getController();
         controller.setMainApp(this);
 
-        Parameters parameters = getParameters();
-        if (!parameters.getRaw().isEmpty()) {
-            isConnected = Boolean.valueOf(parameters.getRaw().get(0));
-        }
+        isConnected = tcpClient.getConnected();
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
@@ -40,5 +44,6 @@ public class RemoteLauncher extends Application {
 
     public void setToken(String token) {
         this.token = token;
+        tcpClient.setToken(token);
     }
 }

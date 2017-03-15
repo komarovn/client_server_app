@@ -6,11 +6,13 @@
  */
 package com.remotelauncher.client;
 
+import com.remotelauncher.client.gui.RemoteLauncher;
+import javafx.application.Application;
+
 public class ClientEntryPoint {
 
     public static void main(String[] args) {
-        TCPClient tcpClient = new TCPClient();
-        tcpClient.runClient();
+        Application.launch(RemoteLauncher.class);
     }
 
 }
