@@ -8,12 +8,12 @@ package com.remotelauncher.server;
 
 import com.remotelauncher.Constants;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Queue;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
@@ -21,13 +21,8 @@ import java.util.Queue;
 
 public class ServerThread extends Thread {
 
-    private Logger LOGGER;
+    private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
     private ServerSocket serverSocket = null;
-
-
-    public ServerThread(Logger LOGGER) {
-        this.LOGGER = LOGGER;
-    }
 
     /*
     private static ThreadGroup getRootThreadGroup(Thread thread) {
@@ -51,7 +46,7 @@ public class ServerThread extends Thread {
     }
     */
 
-    private void preparation(){
+    private void init(){
         SchedulerThread schedulerThread = new SchedulerThread();
         schedulerThread.start();
         LOGGER.info("SERVER IS STARTING...");
@@ -83,7 +78,7 @@ public class ServerThread extends Thread {
         return userId;
     }
 
-    private void mainLoop(ServerSocket serverSocket){
+    private void listenToClients(ServerSocket serverSocket){
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
@@ -129,8 +124,8 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        this.preparation();
-        this.mainLoop(serverSocket);
+        init();
+        listenToClients(serverSocket);
     }
 
 
