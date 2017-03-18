@@ -23,6 +23,7 @@ import java.util.Set;
 public class ServerThread extends Thread {
 
     private Logger LOGGER;
+    private ServerSocket serverSocket = null;
 
     public ServerThread(Logger LOGGER) {
         this.LOGGER = LOGGER;
@@ -48,12 +49,10 @@ public class ServerThread extends Thread {
         return null;
     }
 
-    @Override
-    public void run() {
-        ServerSocket serverSocket = null;
+    private void preparation(){
         LOGGER.info("SERVER IS STARTING...");
         try {
-            serverSocket = new ServerSocket(Constants.PORT_NUMBER);
+            this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
             LOGGER.info("SERVER HAS STARTED.");
         } catch (IOException ex) {
             LOGGER.info("SERVER START HAS FAILED!");
@@ -61,6 +60,9 @@ public class ServerThread extends Thread {
             System.exit(0);
         }
         LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
+    }
+
+    private void mainLoop(ServerSocket serverSocket){
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
@@ -98,6 +100,12 @@ public class ServerThread extends Thread {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void run() {
+        this.preparation();
+        this.mainLoop(serverSocket);
     }
 
 
