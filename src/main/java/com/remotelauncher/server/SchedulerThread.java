@@ -1,17 +1,28 @@
 package com.remotelauncher.server;
 
+import java.util.Queue;
+
 /**
  * Created by rpovelik on 18/03/2017.
  */
 public class SchedulerThread extends Thread {
 
     private WorkThread[] threadPool;
+    private Queue<TaskSession> taskSessionsQueue;
 
-    public WorkThread[] getThreadPool() {
+    public Queue<TaskSession> getTaskSessionsQueue() {
+        return taskSessionsQueue;
+    }
+
+    public void setTaskSessionsQueue(Queue<TaskSession> taskSessionsQueue) {
+        this.taskSessionsQueue = taskSessionsQueue;
+    }
+
+    private WorkThread[] getThreadPool() {
         return threadPool;
     }
 
-    public void setThreadPool(WorkThread[] threadPool) {
+    private void setThreadPool(WorkThread[] threadPool) {
         this.threadPool = threadPool;
     }
 

@@ -23,7 +23,6 @@ public class ServerThread extends Thread {
 
     private Logger LOGGER;
     private ServerSocket serverSocket = null;
-    public Queue<TaskSession> taskSessionsQueue;
 
 
     public ServerThread(Logger LOGGER) {
@@ -51,8 +50,10 @@ public class ServerThread extends Thread {
         return null;
     }
     */
-    
+
     private void preparation(){
+        SchedulerThread schedulerThread = new SchedulerThread();
+        schedulerThread.start();
         LOGGER.info("SERVER IS STARTING...");
         try {
             this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
