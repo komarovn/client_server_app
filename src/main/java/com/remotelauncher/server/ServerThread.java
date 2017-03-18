@@ -8,13 +8,12 @@ package com.remotelauncher.server;
 
 import com.remotelauncher.Constants;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
+import java.util.Queue;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
@@ -24,11 +23,14 @@ public class ServerThread extends Thread {
 
     private Logger LOGGER;
     private ServerSocket serverSocket = null;
+    public Queue<TaskSession> taskSessionsQueue;
+
 
     public ServerThread(Logger LOGGER) {
         this.LOGGER = LOGGER;
     }
 
+    /*
     private static ThreadGroup getRootThreadGroup(Thread thread) {
         ThreadGroup rootGroup = thread.getThreadGroup();
         while (rootGroup.getParent() != null) {
@@ -48,7 +50,8 @@ public class ServerThread extends Thread {
         }
         return null;
     }
-
+    */
+    
     private void preparation(){
         LOGGER.info("SERVER IS STARTING...");
         try {
@@ -88,7 +91,7 @@ public class ServerThread extends Thread {
                 String userId = receiveUserId(token);
                 ClientData clientData = ClientsDataTable.getData(userId);
 
-
+                /*
                 WorkThread workThread = new WorkThread(clientSocket, token);
                 if (!workThread.isDaemon()){
                     workThread.setDaemon(true);
@@ -116,6 +119,7 @@ public class ServerThread extends Thread {
                     // TODO: send queue status to client
                 }
                 LOGGER.info("---- LOOKING FOR NEW CLIENTS...");
+                */
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
