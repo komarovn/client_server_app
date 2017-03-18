@@ -62,19 +62,39 @@ public class ServerThread extends Thread {
         LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
     }
 
+    private String receiveToken(Socket clientSocket){
+        String token = null;
+        try {
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
+            token = dataInputStream.readUTF();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return token;
+    }
+
+    private String receiveUserId(String token){
+        String userId = Integer.toString(token.hashCode());
+        return userId;
+    }
+
     private void mainLoop(ServerSocket serverSocket){
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-                String token = dataInputStream.readUTF();
+                String token = receiveToken(clientSocket);
                 LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
-                String userId = Integer.toString(token.hashCode());
+                String userId = receiveUserId(token);
                 ClientData clientData = ClientsDataTable.getData(userId);
+
+
                 WorkThread workThread = new WorkThread(clientSocket, token);
                 if (!workThread.isDaemon()){
                     workThread.setDaemon(true);
                 }
+
+
                 if (clientData == null) {
                     long workThreadId = workThread.getId();
                     clientData = new ClientData(workThreadId);
