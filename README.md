@@ -1,7 +1,7 @@
 # Client server application
 Contains the most recent version of client-server application for E.Kozinov hometask. (2nd part of 2016-2017 university year)
 
-##Task description (RUS) : Удаленное управление и запуск задач
+## Task description (RUS) : Удаленное управление и запуск задач
 1. Необходимо разработать клиент-серверное приложение удаленного управления и запуска задач. 
 2. Клиент должен позволять загружать исполняемые программы на сервер, обозревать и скачивать результирующие файлы. 
 3. Пользователь должен иметь возможность задавать серию экспериментов. 
