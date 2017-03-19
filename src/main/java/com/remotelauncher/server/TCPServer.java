@@ -23,7 +23,7 @@ public class TCPServer {
         //TODO: Via button START SERVER on UI will be created and started ServerThread
         //TODO: Pass via UI port to listen and edit ServerThread constructor and fields to store the port
         //TODO: Call server.stopServer() from the UI by clicking 'STOP SERVER'
-        ServerThread server = new ServerThread(LOGGER);
+        ServerThread server = new ServerThread();
         server.start();
     }
 

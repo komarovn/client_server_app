@@ -14,6 +14,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
@@ -46,8 +48,17 @@ public class ServerThread extends Thread {
     }
     */
 
-    private void init(){
-        SchedulerThread schedulerThread = new SchedulerThread();
+    private void init() {
+        SchedulerThread schedulerThread = new SchedulerThread(Constants.WORK_THREAD_THRESHOLD);
+        {
+            //TMP SECTION STARTED
+            Queue<TaskSession> tmpQueue = new LinkedList<>();
+            for (int i = 0; i < (Constants.WORK_THREAD_THRESHOLD * 4); i++) {
+                tmpQueue.add(new TaskSession());
+            }
+            schedulerThread.setTaskSessionsQueue(tmpQueue);
+            //TMP SECTION ENDED
+        }
         schedulerThread.start();
         LOGGER.info("SERVER IS STARTING...");
         try {
