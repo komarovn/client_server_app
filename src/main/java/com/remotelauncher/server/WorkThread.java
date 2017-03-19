@@ -26,6 +26,7 @@ public class WorkThread extends Thread {
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
 
+    /*
     public WorkThread(Socket clientSocket, String userId) {
         this.clientSocket = clientSocket;
         this.userId = userId;
@@ -37,6 +38,7 @@ public class WorkThread extends Thread {
             e.printStackTrace();
         }
     }
+    */
 
     @Override
     public void run() {

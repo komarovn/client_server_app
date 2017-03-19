@@ -10,5 +10,6 @@ public abstract class Constants {
 
     public static final String SERVER_NAME = "localhost";
     public static final int PORT_NUMBER = 59342;
+    public static final int THREAD_POOL_SIZE = 10;
 
 }
