@@ -1,14 +1,14 @@
-package com.remotelauncher.server.data;
+package com.remotelauncher.client.data;
 
 import java.util.HashMap;
 
 /**
  * Created by rpovelik on 19/03/2017.
  */
-public class Response {
+public class Request {
     private HashMap<String,Object> data;
 
-    public Response(){
+    public Request(){
         data = new HashMap<>();
     }
 

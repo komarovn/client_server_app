@@ -1,4 +1,4 @@
-package com.remotelauncher.server.data;
+package com.remotelauncher.client.data;
 
 import java.util.HashMap;
 
