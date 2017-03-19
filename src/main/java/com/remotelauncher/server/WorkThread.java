@@ -21,46 +21,25 @@ import java.net.Socket;
 public class WorkThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
-    private Socket clientSocket;
-    private String userId;
-    private DataOutputStream outputStream;
-    private DataInputStream inputStream;
+    private TaskSession taskSession;
 
-    /*
-    public WorkThread(Socket clientSocket, String userId) {
-        this.clientSocket = clientSocket;
-        this.userId = userId;
-        try {
-            outputStream = new DataOutputStream(this.clientSocket.getOutputStream());
-            inputStream = new DataInputStream(this.clientSocket.getInputStream());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+
+    public WorkThread(TaskSession taskSession) {
+        this.taskSession = taskSession;
     }
-    */
+
 
     @Override
     public void run() {
-        String wellcomeMessage = "Hello, I'm here to work with you " + userId;
-        sendMessage(wellcomeMessage);
-        while (true) {
-            try {
-                sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    private void sendMessage(String message) {
+        //TODO: Execute task session
+        LOGGER.info("WORKTHREAD {} IS STARTED, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         try {
-            outputStream.writeUTF(message);
-            outputStream.flush();
-        }
-        catch (Exception e){
+            sleep(getId()*1000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
+        LOGGER.info("WORKTHREAD {} HAS DONE A TASK, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
     }
+
 }
