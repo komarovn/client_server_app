@@ -29,7 +29,7 @@ public class ClientsDataTable {
     }
 
     public static ClientData getData(String key) {
-        return (ClientData)singleton.data.get(key);
+        return (ClientData) singleton.data.get(key);
     }
 
 }

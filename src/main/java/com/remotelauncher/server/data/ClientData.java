@@ -14,7 +14,7 @@ public class ClientData {
         this.workThreadId = workThreadId;
     }
 
-    public long getWorkThreadId(){
+    public long getWorkThreadId() {
         return workThreadId;
     }
 

@@ -1,8 +1,12 @@
+/*
+ * REMOTE TASK LAUNCHER
+ *
+ * Developed by Nikolay Komarov and Rostislav Povelikin
+ * UNN, 2017
+ */
 package com.remotelauncher.server.data;
 
-/**
- * Created by rpovelik on 18/03/2017.
- */
+
 public class TaskSession {
 
 }

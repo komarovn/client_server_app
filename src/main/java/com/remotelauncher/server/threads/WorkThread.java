@@ -30,7 +30,7 @@ public class WorkThread extends Thread {
         //TODO: Execute task session
         LOGGER.info("WORKTHREAD {} IS STARTED, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         try {
-            sleep(getId()*1000);
+            sleep(getId() * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
