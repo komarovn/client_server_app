@@ -1,11 +1,16 @@
-package com.remotelauncher.server;
+/*
+ * REMOTE TASK LAUNCHER
+ *
+ * Developed by Nikolay Komarov and Rostislav Povelikin
+ * UNN, 2017
+ */
+package com.remotelauncher.server.threads;
+
+import com.remotelauncher.server.data.TaskSession;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Created by rpovelik on 18/03/2017.
- */
 public class SchedulerThread extends Thread {
 
     private static Integer workThreadCounter;

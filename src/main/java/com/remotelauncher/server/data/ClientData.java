@@ -4,7 +4,7 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.server;
+package com.remotelauncher.server.data;
 
 public class ClientData {
 
@@ -14,7 +14,7 @@ public class ClientData {
         this.workThreadId = workThreadId;
     }
 
-    public long getWorkThreadId(){
+    public long getWorkThreadId() {
         return workThreadId;
     }
 

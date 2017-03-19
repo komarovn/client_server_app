@@ -4,15 +4,11 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.server;
+package com.remotelauncher.server.threads;
 
+import com.remotelauncher.server.data.TaskSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 
 /**
  * Client (work) thread operates with one exact client. For N clients there will be N client threads. It provides
@@ -34,7 +30,7 @@ public class WorkThread extends Thread {
         //TODO: Execute task session
         LOGGER.info("WORKTHREAD {} IS STARTED, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         try {
-            sleep(getId()*1000);
+            sleep(getId() * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
