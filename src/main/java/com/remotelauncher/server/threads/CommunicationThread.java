@@ -1,4 +1,4 @@
-package com.remotelauncher.server;
+package com.remotelauncher.server.threads;
 
 /**
  * Created by rpovelik on 19/03/2017.

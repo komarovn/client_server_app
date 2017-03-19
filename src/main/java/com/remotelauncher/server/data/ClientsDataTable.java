@@ -4,7 +4,7 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.server;
+package com.remotelauncher.server.data;
 
 import java.util.HashMap;
 

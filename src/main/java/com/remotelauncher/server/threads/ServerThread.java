@@ -4,9 +4,12 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.server;
+package com.remotelauncher.server.threads;
 
 import com.remotelauncher.Constants;
+import com.remotelauncher.server.data.ClientData;
+import com.remotelauncher.server.data.ClientsDataTable;
+import com.remotelauncher.server.data.TaskSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,36 +100,6 @@ public class ServerThread extends Thread {
                 LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
                 String userId = receiveUserId(token);
                 ClientData clientData = ClientsDataTable.getData(userId);
-
-                /*
-                WorkThread workThread = new WorkThread(clientSocket, token);
-                if (!workThread.isDaemon()){
-                    workThread.setDaemon(true);
-                }
-
-
-                if (clientData == null) {
-                    long workThreadId = workThread.getId();
-                    clientData = new ClientData(workThreadId);
-                    LOGGER.info("CLIENT HAS NOT BEEN REGISTRED IN THE SYSTEM. HIS NEW WORK THREAD ID: {}", workThreadId);
-                    ClientsDataTable.setData(userId, clientData);
-                    workThread.start();
-                }
-                else {
-                    long workThreadId = (long) clientData.getWorkThreadId();
-                    LOGGER.info("CLIENT HAS ALREADY BEEN REGISTRED IN THE SYSTEM. HIS WORK THREAD ID: {} \n", workThreadId);
-                    workThread = getWorkThread(workThreadId);
-                    if (workThread != null) {
-                        LOGGER.info("WE FOUND CLIENT THREAD");
-                    }
-                    else{
-                        LOGGER.info("SOMETHING IS GOING WRONG...");
-                    }
-
-                    // TODO: send queue status to client
-                }
-                LOGGER.info("---- LOOKING FOR NEW CLIENTS...");
-                */
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

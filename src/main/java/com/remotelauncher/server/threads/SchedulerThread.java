@@ -1,4 +1,6 @@
-package com.remotelauncher.server;
+package com.remotelauncher.server.threads;
+
+import com.remotelauncher.server.data.TaskSession;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,4 +1,4 @@
-package com.remotelauncher.server;
+package com.remotelauncher.server.data;
 
 /**
  * Created by rpovelik on 18/03/2017.
