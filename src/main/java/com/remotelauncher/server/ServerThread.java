@@ -14,7 +14,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
@@ -22,12 +21,10 @@ import java.util.Set;
 
 public class ServerThread extends Thread {
 
-    private Logger LOGGER;
+    private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
+    private ServerSocket serverSocket = null;
 
-    public ServerThread(Logger LOGGER) {
-        this.LOGGER = LOGGER;
-    }
-
+    /*
     private static ThreadGroup getRootThreadGroup(Thread thread) {
         ThreadGroup rootGroup = thread.getThreadGroup();
         while (rootGroup.getParent() != null) {
@@ -47,13 +44,14 @@ public class ServerThread extends Thread {
         }
         return null;
     }
+    */
 
-    @Override
-    public void run() {
-        ServerSocket serverSocket = null;
+    private void init(){
+        SchedulerThread schedulerThread = new SchedulerThread();
+        schedulerThread.start();
         LOGGER.info("SERVER IS STARTING...");
         try {
-            serverSocket = new ServerSocket(Constants.PORT_NUMBER);
+            this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
             LOGGER.info("SERVER HAS STARTED.");
         } catch (IOException ex) {
             LOGGER.info("SERVER START HAS FAILED!");
@@ -61,18 +59,41 @@ public class ServerThread extends Thread {
             System.exit(0);
         }
         LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
+    }
+
+    private String receiveToken(Socket clientSocket){
+        String token = null;
+        try {
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
+            token = dataInputStream.readUTF();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return token;
+    }
+
+    private String receiveUserId(String token){
+        String userId = Integer.toString(token.hashCode());
+        return userId;
+    }
+
+    private void listenToClients(ServerSocket serverSocket){
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-                String token = dataInputStream.readUTF();
+                String token = receiveToken(clientSocket);
                 LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
-                String userId = Integer.toString(token.hashCode());
+                String userId = receiveUserId(token);
                 ClientData clientData = ClientsDataTable.getData(userId);
+
+                /*
                 WorkThread workThread = new WorkThread(clientSocket, token);
                 if (!workThread.isDaemon()){
                     workThread.setDaemon(true);
                 }
+
+
                 if (clientData == null) {
                     long workThreadId = workThread.getId();
                     clientData = new ClientData(workThreadId);
@@ -94,10 +115,17 @@ public class ServerThread extends Thread {
                     // TODO: send queue status to client
                 }
                 LOGGER.info("---- LOOKING FOR NEW CLIENTS...");
+                */
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void run() {
+        init();
+        listenToClients(serverSocket);
     }
 
 
