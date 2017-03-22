@@ -6,55 +6,98 @@
  */
 package com.remotelauncher.server.threads;
 
+import com.remotelauncher.server.data.ClientData;
+import com.remotelauncher.server.data.ClientsDataTable;
 import com.remotelauncher.server.data.Request;
 import com.remotelauncher.server.data.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
+/**
+ * Communication Thread is used for communicating with clients. It must receive request and send response only.
+ */
 public class CommunicationThread extends Thread {
     //TODO: add functionality of communication with clients
+    private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
+
     private Socket clientSocket;
     ObjectInputStream objectInputStream;
     ObjectOutputStream objectOutputStream;
 
     public CommunicationThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        try {
-            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
+    /**
+     * Send response.
+     * @param response - sending response to client
+     */
     public void sendResponse(Response response) {
         try {
             objectOutputStream.writeObject(response);
             objectOutputStream.flush();
+            LOGGER.debug("Client id: send response: {}", response.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void receiveRequest() {
-        Request request;
+    /**
+     * Receive request.
+     * @return accepted request from client
+     */
+    public Request receiveRequest() {
+        Request request = null;
         try {
             request = (Request) objectInputStream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
+        } catch (IOException|ClassNotFoundException e) {
+            LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
         }
-        //TODO: Analyze request
+        return request;
     }
 
     @Override
     public void run() {
-        while (true) {
-            receiveRequest();
+        try {
+            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            while (clientSocket.isConnected()) {
+                Request request = receiveRequest();
+                Response response = new Response();
+                if (request != null) {
+                    processRequest(request, response);
+                    sendResponse(response);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.info("Client is offline: client's address: {}", clientSocket.getInetAddress());
         }
+    }
+
+    //TODO: remove work with token to another class
+    private void receiveToken(Request token, Response response) {
+        try {
+            String tok = (String) token.getParameter("token");
+            //TODO: put user's token to DB.
+            response.setParameter("message", "KOLYAN S PABHNHHbIX POLYAN");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String receiveUserId(String token) {
+        String userId = Integer.toString(token.hashCode());
+        return userId;
+    }
+
+    public void processRequest(Request request, Response response) {
+        receiveToken(request, response);
     }
 }

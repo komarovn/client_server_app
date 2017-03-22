@@ -30,9 +30,9 @@ public class ServerThread extends Thread {
     private ServerSocket serverSocket = null;
 
     private void init() {
+        LOGGER.info("SERVER IS STARTING...");
         SchedulerThread schedulerThread = new SchedulerThread(Constants.WORK_THREAD_THRESHOLD);
         schedulerThread.start();
-        LOGGER.info("SERVER IS STARTING...");
         try {
             this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
             LOGGER.info("SERVER HAS STARTED.");
@@ -44,39 +44,13 @@ public class ServerThread extends Thread {
         LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
     }
 
-    private String receiveToken(Socket clientSocket) {
-        Request token = null;
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            token = (Request) objectInputStream.readObject();
-            Response response = new Response();
-            response.setParameter("message", "KOLYAN S PABHNHHbIX POLYAN");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            objectOutputStream.writeObject(response);
-            objectOutputStream.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return (String) token.getParameter("token");
-    }
-
-    private String receiveUserId(String token) {
-        String userId = Integer.toString(token.hashCode());
-        return userId;
-    }
-
     private void listenToClients(ServerSocket serverSocket) {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                String token = receiveToken(clientSocket);
-                LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
-                String userId = receiveUserId(token);
-                ClientData clientData = ClientsDataTable.getData(userId);
                 CommunicationThread communicationThread = new CommunicationThread(clientSocket);
-                communicationThread.run();
-                //TODO: Launch communication thread with while(true) listening to client
-            } catch (Exception ex) {
+                communicationThread.start();
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -87,7 +61,6 @@ public class ServerThread extends Thread {
         init();
         listenToClients(serverSocket);
     }
-
 
     public synchronized void stopServer() {
         Thread[] threads = new Thread[currentThread().getThreadGroup().activeCount()];

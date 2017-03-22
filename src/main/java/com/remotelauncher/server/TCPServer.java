@@ -13,14 +13,18 @@ import org.slf4j.LoggerFactory;
 public class TCPServer {
 
     private Logger LOGGER = LoggerFactory.getLogger(TCPServer.class);
+    private ServerThread server;
 
     public void runServer() {
-        //TODO: Add server side UI frame in main thread.
-        //TODO: Via button START SERVER on UI will be created and started ServerThread
         //TODO: Pass via UI port to listen and edit ServerThread constructor and fields to store the port
-        //TODO: Call server.stopServer() from the UI by clicking 'STOP SERVER'
-        ServerThread server = new ServerThread();
+        server = new ServerThread();
         server.start();
+    }
+
+    public void stopServer() {
+        if (server != null && server.isAlive()) {
+            server.stopServer();
+        }
     }
 
 }

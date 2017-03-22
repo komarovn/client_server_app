@@ -6,11 +6,13 @@
  */
 package com.remotelauncher.server;
 
+import com.remotelauncher.server.gui.ServerManager;
+import javafx.application.Application;
+
 public class ServerEntryPoint {
 
     public static void main(String[] args) {
-        TCPServer tcpServer = new TCPServer();
-        tcpServer.runServer();
+        Application.launch(ServerManager.class);
     }
 
 }

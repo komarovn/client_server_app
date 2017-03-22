@@ -46,7 +46,9 @@ public class TCPClient {
             outputStream.flush();
 
             // --- Server is processing request here ---
-            inputStream = new ObjectInputStream(clientSocket.getInputStream());
+            if (!clientSocket.isClosed()) {
+                inputStream = new ObjectInputStream(clientSocket.getInputStream());
+            }
             processResponse(inputStream);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,8 +56,6 @@ public class TCPClient {
     }
 
     private void createRequest(ObjectOutputStream outputStream) {
-        // TODO: create a some structure 'Request' for store request data
-        // so, there will be method which encode object of 'Request' into output stream
         try {
             if (token != null) {
                 Request request = new Request();
@@ -68,11 +68,11 @@ public class TCPClient {
     }
 
     private void processResponse(ObjectInputStream inputStream) {
-        // TODO: create a some structure 'Response' for store response data, because we cannot always work with InputStream
-        // so, there will be method which decode input stream into object of 'Response'
         try {
             Response response = (Response) inputStream.readObject();
-            System.out.printf((String) response.getParameter("message"));
+            if (response.getParameter("message") != null) {
+                System.out.printf((String) response.getParameter("message"));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
