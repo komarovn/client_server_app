@@ -18,6 +18,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * Communication Thread is used for communicating with clients. It must receive request and send response only.
+ */
 public class CommunicationThread extends Thread {
     //TODO: add functionality of communication with clients
     private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
@@ -29,8 +32,9 @@ public class CommunicationThread extends Thread {
     public CommunicationThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
-            //this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            //this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            //TODO: remove that part with token out of here.
             String token = receiveToken(clientSocket);
             LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
             String userId = receiveUserId(token);
@@ -40,6 +44,10 @@ public class CommunicationThread extends Thread {
         }
     }
 
+    /**
+     * Send response.
+     * @param response - sending response to client
+     */
     public void sendResponse(Response response) {
         try {
             objectOutputStream.writeObject(response);
@@ -50,6 +58,10 @@ public class CommunicationThread extends Thread {
         }
     }
 
+    /**
+     * Receive request.
+     * @return accepted request from client
+     */
     public Request receiveRequest() {
         Request request = null;
         try {
@@ -73,21 +85,19 @@ public class CommunicationThread extends Thread {
     public void run() {
         while (clientSocket.isConnected()) {
             Request request = receiveRequest();
-            //TODO: Process request
+            //TODO: Process request - how to do that? how to invoke a nessessary method for process different requests?
             sendResponse(new Response());
         }
     }
 
+    //TODO: remove work with token to another class: Make Communication Thread Abstract Again!
     private String receiveToken(Socket clientSocket) {
         Request token = null;
         try {
-            objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            token = (Request) objectInputStream.readObject();
+            token = receiveRequest();
             Response response = new Response();
             response.setParameter("message", "KOLYAN S PABHNHHbIX POLYAN");
-            objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            objectOutputStream.writeObject(response);
-            objectOutputStream.flush();
+            sendResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
         }
