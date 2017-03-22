@@ -8,6 +8,8 @@ package com.remotelauncher.client.gui;
 
 import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
+import com.remotelauncher.shared.Request;
+import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +23,6 @@ public class RemoteLauncher extends Application {
 
     private TCPClient tcpClient;
     private Boolean isConnected = false;
-    private String token;
 
     public RemoteLauncher() {
         tcpClient = new TCPClient();
@@ -44,12 +45,7 @@ public class RemoteLauncher extends Application {
         primaryStage.show();
     }
 
-    public void setToken(String token) {
-        this.token = token;
-        tcpClient.setToken(token);
-    }
-
-    public void process() {
-        tcpClient.process();
+    public Response processRequest(Request request) {
+        return tcpClient.processRequest(request);
     }
 }

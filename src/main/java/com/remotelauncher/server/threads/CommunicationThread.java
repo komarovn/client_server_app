@@ -6,10 +6,8 @@
  */
 package com.remotelauncher.server.threads;
 
-import com.remotelauncher.server.data.ClientData;
-import com.remotelauncher.server.data.ClientsDataTable;
-import com.remotelauncher.server.data.Request;
-import com.remotelauncher.server.data.Response;
+import com.remotelauncher.shared.Request;
+import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +15,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 
 /**
  * Communication Thread is used for communicating with clients. It must receive request and send response only.
@@ -42,7 +39,7 @@ public class CommunicationThread extends Thread {
         try {
             objectOutputStream.writeObject(response);
             objectOutputStream.flush();
-            LOGGER.debug("Client id: send response: {}", response.toString());
+            LOGGER.debug("Client's address: {}: send response: \n er\n e \n r\n t\nw \nw \n r\n t\n w\nre \ntr \n {}", clientSocket.getInetAddress(), response.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

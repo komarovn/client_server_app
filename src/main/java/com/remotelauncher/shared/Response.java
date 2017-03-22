@@ -4,7 +4,7 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client.data;
+package com.remotelauncher.shared;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,5 +22,12 @@ public class Response implements Serializable {
 
     public Object getParameter(String key) {
         return data.get(key);
+    }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "data=" + data +
+                "}";
     }
 }
