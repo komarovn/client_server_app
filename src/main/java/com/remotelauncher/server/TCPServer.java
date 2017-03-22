@@ -16,10 +16,7 @@ public class TCPServer {
     private ServerThread server;
 
     public void runServer() {
-        //TODO: Add server side UI frame in main thread.
-        //TODO: Via button START SERVER on UI will be created and started ServerThread
         //TODO: Pass via UI port to listen and edit ServerThread constructor and fields to store the port
-        //TODO: Call server.stopServer() from the UI by clicking 'STOP SERVER'
         server = new ServerThread();
         server.start();
     }
