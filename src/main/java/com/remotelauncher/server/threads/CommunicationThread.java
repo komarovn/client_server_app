@@ -66,6 +66,7 @@ public class CommunicationThread extends Thread {
             this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             while (clientSocket.isConnected()) {
+                //TODO: stop peceiving request when client doesn't send it. There is endless loop happens.
                 Request request = receiveRequest();
                 Response response = new Response();
                 if (request != null) {

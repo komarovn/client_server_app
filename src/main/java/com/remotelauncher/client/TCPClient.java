@@ -38,17 +38,19 @@ public class TCPClient {
 
     public Response processRequest(Request request) {
         try {
-            outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            outputStream.writeObject(request);
+            if (clientSocket != null) {
+                outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+                outputStream.writeObject(request);
 
-            // send data to server
-            outputStream.flush();
+                // send data to server
+                outputStream.flush();
 
-            // --- Server is processing request here ---
-            if (!clientSocket.isClosed()) {
-                inputStream = new ObjectInputStream(clientSocket.getInputStream());
+                // --- Server is processing request here ---
+                if (!clientSocket.isClosed()) {
+                    inputStream = new ObjectInputStream(clientSocket.getInputStream());
+                }
+                return (Response) inputStream.readObject();
             }
-            return (Response) inputStream.readObject();
         } catch (Exception e) {
             e.printStackTrace();
         }

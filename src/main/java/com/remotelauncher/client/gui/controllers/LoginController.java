@@ -48,6 +48,7 @@ public class LoginController implements Initializable {
                     Response response = mainApp.processRequest(request);
                     if (response.getParameter("message") != null) {
                         System.out.printf((String) response.getParameter("message"));
+                        mainApp.openMainFrame();
                     }
                 }
             }
@@ -55,6 +56,10 @@ public class LoginController implements Initializable {
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Request request = new Request();
+                request.setParameter("state", "DISCONNECT");
+                mainApp.processRequest(request);
+                System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
             }
