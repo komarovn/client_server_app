@@ -20,9 +20,15 @@ public class ServerManager extends Application {
     private final String SERVER_MANAGER = "Server Manager";
     private TCPServer tcpServer;
 
-    public ServerManager() {
+    public ServerManager() {}
+
+    public void runTCPServer() {
         tcpServer = new TCPServer();
         tcpServer.runServer();
+    }
+
+    public void stopTCPServer() {
+        tcpServer.stopServer();
     }
 
     @Override
@@ -33,6 +39,7 @@ public class ServerManager extends Application {
         primaryStage.setTitle(SERVER_MANAGER);
         primaryStage.setScene(new Scene(root));
         ServerController controller = loader.getController();
+        controller.setMainApp(this);
 
         primaryStage.show();
     }
