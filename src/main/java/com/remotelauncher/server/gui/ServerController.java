@@ -18,7 +18,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 
-import java.io.Console;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -65,9 +64,11 @@ public class ServerController implements Initializable {
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                statusLabel.setText(SERVER_SHUTTING_DOWN);
+                statusColor.setStyle("-fx-background-color: yellow; -fx-background-radius: 20px");
+                mainApp.stopTCPServer();
                 statusLabel.setText(SERVER_OFF);
                 statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
-                mainApp.stopTCPServer();
                 startServer.setDisable(false);
             }
         });

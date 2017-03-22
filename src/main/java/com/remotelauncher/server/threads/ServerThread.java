@@ -73,9 +73,10 @@ public class ServerThread extends Thread {
                 LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
                 String userId = receiveUserId(token);
                 ClientData clientData = ClientsDataTable.getData(userId);
-                CommunicationThread communicationThread = new CommunicationThread(clientSocket);
-                communicationThread.run();
-                //TODO: Launch communication thread with while(true) listening to client
+                if (clientData == null) {
+                    CommunicationThread communicationThread = new CommunicationThread(clientSocket);
+                    communicationThread.start();
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

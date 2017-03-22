@@ -44,6 +44,7 @@ public class CommunicationThread extends Thread {
         try {
             request = (Request) objectInputStream.readObject();
             //TODO: Process request
+            sendResponse(new Response());
         } catch (IOException e) {
             try {
                 clientSocket.shutdownInput();
