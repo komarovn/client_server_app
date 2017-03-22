@@ -43,17 +43,23 @@ public class CommunicationThread extends Thread {
         Request request;
         try {
             request = (Request) objectInputStream.readObject();
+            //TODO: Process request
         } catch (IOException e) {
+            try {
+                clientSocket.shutdownInput();
+                clientSocket.shutdownOutput();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        //TODO: Analyze request
     }
 
     @Override
     public void run() {
-        while (true) {
+        while (clientSocket.isConnected()) {
             receiveRequest();
         }
     }
