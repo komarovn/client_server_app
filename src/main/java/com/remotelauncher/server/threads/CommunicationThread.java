@@ -39,7 +39,7 @@ public class CommunicationThread extends Thread {
         try {
             objectOutputStream.writeObject(response);
             objectOutputStream.flush();
-            LOGGER.debug("Client's address: {}: send response: \n er\n e \n r\n t\nw \nw \n r\n t\n w\nre \ntr \n {}", clientSocket.getInetAddress(), response.toString());
+            LOGGER.debug("Client's address: {}: send response: {}", clientSocket.getInetAddress(), response.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
