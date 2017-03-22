@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Communication Thread is used for communicating with clients. It must receive request and send response only.
@@ -31,17 +32,6 @@ public class CommunicationThread extends Thread {
 
     public CommunicationThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        try {
-            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            //TODO: remove that part with token out of here.
-            String token = receiveToken(clientSocket);
-            LOGGER.info("CLIENT WITH TOKEN {} WAS CONNECTED.", token);
-            String userId = receiveUserId(token);
-            ClientData clientData = ClientsDataTable.getData(userId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -66,46 +56,48 @@ public class CommunicationThread extends Thread {
         Request request = null;
         try {
             request = (Request) objectInputStream.readObject();
-            LOGGER.debug("Client id: received request: {}", request.toString());
-        } catch (IOException e) {
-            try {
-                clientSocket.shutdownInput();
-                clientSocket.shutdownOutput();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
+        } catch (IOException|ClassNotFoundException e) {
+            LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
         }
         return request;
     }
 
     @Override
     public void run() {
-        while (clientSocket.isConnected()) {
-            Request request = receiveRequest();
-            //TODO: Process request - how to do that? how to invoke a nessessary method for process different requests?
-            sendResponse(new Response());
+        try {
+            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            while (clientSocket.isConnected()) {
+                Request request = receiveRequest();
+                Response response = new Response();
+                if (request != null) {
+                    processRequest(request, response);
+                    sendResponse(response);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.info("Client is offline: client's address: {}", clientSocket.getInetAddress());
         }
     }
 
-    //TODO: remove work with token to another class: Make Communication Thread Abstract Again!
-    private String receiveToken(Socket clientSocket) {
-        Request token = null;
+    //TODO: remove work with token to another class
+    private void receiveToken(Request token, Response response) {
         try {
-            token = receiveRequest();
-            Response response = new Response();
+            String tok = (String) token.getParameter("token");
+            //TODO: put user's token to DB.
             response.setParameter("message", "KOLYAN S PABHNHHbIX POLYAN");
-            sendResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (String) token.getParameter("token");
     }
 
     private String receiveUserId(String token) {
         String userId = Integer.toString(token.hashCode());
         return userId;
+    }
+
+    public void processRequest(Request request, Response response) {
+        receiveToken(request, response);
     }
 }

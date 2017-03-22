@@ -50,7 +50,7 @@ public class ServerThread extends Thread {
                 Socket clientSocket = serverSocket.accept();
                 CommunicationThread communicationThread = new CommunicationThread(clientSocket);
                 communicationThread.start();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }

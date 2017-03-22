@@ -46,16 +46,12 @@ public class TCPClient {
             outputStream.flush();
 
             // --- Server is processing request here ---
-            inputStream = new ObjectInputStream(clientSocket.getInputStream());
+            if (!clientSocket.isClosed()) {
+                inputStream = new ObjectInputStream(clientSocket.getInputStream());
+            }
             processResponse(inputStream);
         } catch (Exception e) {
             e.printStackTrace();
-            try {
-                clientSocket.shutdownOutput();
-                clientSocket.shutdownInput();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
         }
     }
 
