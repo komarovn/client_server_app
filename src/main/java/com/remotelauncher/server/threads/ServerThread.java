@@ -62,6 +62,7 @@ public class ServerThread extends Thread {
         listenToClients(serverSocket);
     }
 
+    //TODO: incorrect work of this method.
     public synchronized void stopServer() {
         Thread[] threads = new Thread[currentThread().getThreadGroup().activeCount()];
         currentThread().getThreadGroup().enumerate(threads);
