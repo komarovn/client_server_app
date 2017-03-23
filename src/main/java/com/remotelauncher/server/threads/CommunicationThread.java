@@ -55,8 +55,8 @@ public class CommunicationThread extends Thread {
     public Request receiveRequest() {
         Request request = null;
         try {
-            request = (Request) objectInputStream.readObject();
-            LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
+                request = (Request) objectInputStream.readObject();
+                LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
         } catch (IOException|ClassNotFoundException e) {
             LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
         }
