@@ -4,12 +4,13 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client.data;
+package com.remotelauncher.shared;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
 public class Request implements Serializable {
+
     private HashMap<String, Object> data;
 
     public Request() {
@@ -22,5 +23,12 @@ public class Request implements Serializable {
 
     public Object getParameter(String key) {
         return data.get(key);
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "data=" + data +
+                '}';
     }
 }
