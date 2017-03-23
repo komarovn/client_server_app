@@ -7,8 +7,8 @@
 package com.remotelauncher.client;
 
 import com.remotelauncher.Constants;
-import com.remotelauncher.server.data.Request;
-import com.remotelauncher.server.data.Response;
+import com.remotelauncher.shared.Request;
+import com.remotelauncher.shared.Response;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -18,7 +18,6 @@ public class TCPClient {
 
     private Socket clientSocket;
     private Boolean isConnected;
-    private String token;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
@@ -37,52 +36,32 @@ public class TCPClient {
         }
     }
 
-    public void process() {
+    public Response processRequest(Request request) {
         try {
-            outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            createRequest(outputStream);
-
-            // send data to server
-            outputStream.flush();
-
-            // --- Server is processing request here ---
-            if (!clientSocket.isClosed()) {
-                inputStream = new ObjectInputStream(clientSocket.getInputStream());
-            }
-            processResponse(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void createRequest(ObjectOutputStream outputStream) {
-        try {
-            if (token != null) {
-                Request request = new Request();
-                request.setParameter("token", token);
+            if (clientSocket != null) {
+                outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
                 outputStream.writeObject(request);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void processResponse(ObjectInputStream inputStream) {
-        try {
-            Response response = (Response) inputStream.readObject();
-            if (response.getParameter("message") != null) {
-                System.out.printf((String) response.getParameter("message"));
+                // send data to server
+                outputStream.flush();
+
+                // --- Server is processing request here ---
+                if (!clientSocket.isClosed()) {
+                    inputStream = new ObjectInputStream(clientSocket.getInputStream());
+                }
+                return (Response) inputStream.readObject();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    private void processResponse(Response response) {
+
     }
 
     public Boolean getConnected() {
         return isConnected;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

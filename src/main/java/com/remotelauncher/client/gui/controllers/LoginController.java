@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.shared.Request;
+import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -40,15 +42,24 @@ public class LoginController implements Initializable {
             public void handle(ActionEvent event) {
                 // TODO: open main app form
                 if (!tokenTextfield.getText().isEmpty()) {
+                    Request request = new Request();
                     String token = tokenTextfield.getText();
-                    mainApp.setToken(token);
-                    mainApp.process();
+                    request.setParameter("token", token);
+                    Response response = mainApp.processRequest(request);
+                    if (response.getParameter("message") != null) {
+                        System.out.printf((String) response.getParameter("message"));
+                        mainApp.openMainFrame();
+                    }
                 }
             }
         });
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Request request = new Request();
+                request.setParameter("state", "DISCONNECT");
+                mainApp.processRequest(request);
+                System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
             }
