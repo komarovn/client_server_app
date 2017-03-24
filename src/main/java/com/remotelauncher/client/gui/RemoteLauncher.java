@@ -63,7 +63,8 @@ public class RemoteLauncher extends Application {
     }
 
     public Response processRequest(Request request) {
-        return tcpClient.processRequest(request);
+        //return tcpClient.processRequest(request);
+        return new Response();
     }
 
     public void openMainFrame() {
