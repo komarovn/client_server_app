@@ -27,6 +27,8 @@ public class TCPClient {
                 clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
                 isConnected = true;
                 System.out.println("Connection established.");
+                CommunicationThread communication = new CommunicationThread(clientSocket);
+                communication.start();
             } catch (ConnectException e) {
                 isConnected = false;
                 System.out.println("Connection refused.");
@@ -34,31 +36,6 @@ public class TCPClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public Response processRequest(Request request) {
-        try {
-            if (clientSocket != null) {
-                outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                outputStream.writeObject(request);
-
-                // send data to server
-                outputStream.flush();
-
-                // --- Server is processing request here ---
-                if (!clientSocket.isClosed()) {
-                    inputStream = new ObjectInputStream(clientSocket.getInputStream());
-                }
-                return (Response) inputStream.readObject();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void processResponse(Response response) {
-
     }
 
     public Boolean getConnected() {

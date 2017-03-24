@@ -12,6 +12,7 @@ import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,6 +44,8 @@ public class RemoteLauncher extends Application {
                 request.setParameter("state", "DISCONNECT");
                 processRequest(request);
                 System.out.println("App is closed");
+                Platform.exit();
+                System.exit(0);
             }
         });
         URL address = getClass().getResource("/fxml/LoginFormGUI.fxml");
@@ -60,7 +63,8 @@ public class RemoteLauncher extends Application {
     }
 
     public Response processRequest(Request request) {
-        return tcpClient.processRequest(request);
+        //return tcpClient.processRequest(request);
+        return new Response();
     }
 
     public void openMainFrame() {
