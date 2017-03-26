@@ -46,8 +46,7 @@ public class RemoteLauncher extends Application {
             public void handle(WindowEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                Response response = null;
-                response = communication.processRequest(request);
+                communication.processRequest(request);
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -67,12 +66,6 @@ public class RemoteLauncher extends Application {
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
-    }
-
-    //TODO: delete
-    public Response processRequest(Request request) {
-        //return tcpClient.processRequest(request);
-        return new Response();
     }
 
     public void openMainFrame() {

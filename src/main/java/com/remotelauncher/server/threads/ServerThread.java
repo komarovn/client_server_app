@@ -17,7 +17,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -28,6 +30,7 @@ public class ServerThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
     private ServerSocket serverSocket = null;
+    private List<CommunicationThread> communicationThreads = new ArrayList<>();
 
     private void init() {
         LOGGER.info("SERVER IS STARTING...");
@@ -45,13 +48,14 @@ public class ServerThread extends Thread {
     }
 
     private void listenToClients(ServerSocket serverSocket) {
-        while (true) {
+        while (!serverSocket.isClosed()) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 CommunicationThread communicationThread = new CommunicationThread(clientSocket);
+                communicationThreads.add(communicationThread);
                 communicationThread.start();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                LOGGER.debug("Server socket is closed.");
             }
         }
     }
@@ -62,14 +66,18 @@ public class ServerThread extends Thread {
         listenToClients(serverSocket);
     }
 
-    //TODO: shutdown all communication threads.
     public synchronized void stopServer() {
-        Thread[] communicationThreads = new Thread[currentThread().getThreadGroup().activeCount()];
-        currentThread().getThreadGroup().enumerate(communicationThreads);
         for (Thread thread : communicationThreads) {
+            LOGGER.debug("Communication thread {} is stopped.", thread.getId());
             thread.stop();
         }
-        stop();
+        try {
+            serverSocket.close();
+            LOGGER.debug("Server thread is stopped.");
+            stop();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

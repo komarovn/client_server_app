@@ -24,7 +24,8 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    private List<CommunicationListener> listeners = new ArrayList<>();
+    private RemoteLauncher mainApp;
+    private CommunicationListener listener;
 
     @FXML
     private Button connectButton;
@@ -38,8 +39,6 @@ public class LoginController implements Initializable {
     @FXML
     private Label serverUnavailable;
 
-    private RemoteLauncher mainApp;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -50,13 +49,10 @@ public class LoginController implements Initializable {
                     Request request = new Request();
                     String token = tokenTextfield.getText();
                     request.setParameter("token", token);
-                    Response response = null;
-                    for (CommunicationListener listener : listeners) {
-                        response = listener.processRequest(request);
-                    }
+                    Response response = listener.processRequest(request);
                     if (response.getParameter("message") != null) {
                         System.out.printf((String) response.getParameter("message"));
-                        //mainApp.openMainFrame();
+                        mainApp.openMainFrame();
                     }
                 }
             }
@@ -66,11 +62,7 @@ public class LoginController implements Initializable {
             public void handle(ActionEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                mainApp.processRequest(request);
-                Response response = null;
-                for (CommunicationListener listener : listeners) {
-                    response = listener.processRequest(request);
-                }
+                listener.processRequest(request);
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -88,8 +80,8 @@ public class LoginController implements Initializable {
         this.mainApp = mainApp;
     }
 
-    public void addListener(CommunicationListener toAdd) {
-        listeners.add(toAdd);
+    public void addListener(CommunicationListener listener) {
+        this.listener = listener;
     }
 
 }

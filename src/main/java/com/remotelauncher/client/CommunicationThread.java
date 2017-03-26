@@ -33,7 +33,7 @@ public class CommunicationThread extends Thread implements CommunicationListener
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             while (clientSocket.isConnected()) {
-                //TODO: listen for responses.
+                // listen for responses.
             }
         } catch (IOException e) {
             System.out.print("Failed to create comunication thread");
