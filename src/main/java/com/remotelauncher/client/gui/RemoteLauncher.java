@@ -6,14 +6,13 @@
  */
 package com.remotelauncher.client.gui;
 
-import com.remotelauncher.client.RequestThread;
-import com.remotelauncher.client.ResponseThread;
+import com.remotelauncher.client.threads.communication.RequestThread;
+import com.remotelauncher.client.threads.communication.ResponseThread;
 import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
 import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.client.gui.controllers.LoginController;
-import com.remotelauncher.shared.Response;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;

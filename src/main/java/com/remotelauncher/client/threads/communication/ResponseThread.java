@@ -4,8 +4,9 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client;
+package com.remotelauncher.client.threads.communication;
 
+import com.remotelauncher.client.interfaces.ResponseListener;
 import com.remotelauncher.shared.Response;
 import javafx.application.Platform;
 

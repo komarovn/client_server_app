@@ -8,6 +8,8 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.Constants;
 import com.remotelauncher.server.data.*;
+import com.remotelauncher.server.threads.communication.RequestThread;
+import com.remotelauncher.server.threads.communication.ResponseThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,16 +59,25 @@ public class ServerThread extends Thread {
         while (!serverSocket.isClosed()) {
             try {
                 Socket clientSocket = serverSocket.accept();
+
+                /*
+                RequestThread requestThread = new RequestThread(clientSocket);
+                ResponseThread responseThread = new ResponseThread(clientSocket);
+                requestThread.start();
+                responseThread.start();
+                */
+
+                //TODO: Remove CommunicationThread and its starting after implementing message classification
                 CommunicationThread communicationThread = new CommunicationThread(clientSocket);
                 communicationThreads.add(communicationThread);
                 communicationThread.start();
+
             } catch (IOException ex) {
                 LOGGER.debug("Server socket is closed.");
             }
         }
     }
 
-    //TODO: Stop SchedulerThread, WorkThreads and save taskSessionQueue to DB
     public synchronized void stopServer() {
         for (Thread thread : communicationThreads) {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
