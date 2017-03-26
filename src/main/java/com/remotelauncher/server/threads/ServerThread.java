@@ -62,11 +62,11 @@ public class ServerThread extends Thread {
         listenToClients(serverSocket);
     }
 
-    //TODO: incorrect work of this method.
+    //TODO: shutdown all communication threads.
     public synchronized void stopServer() {
-        Thread[] threads = new Thread[currentThread().getThreadGroup().activeCount()];
-        currentThread().getThreadGroup().enumerate(threads);
-        for (Thread thread : threads) {
+        Thread[] communicationThreads = new Thread[currentThread().getThreadGroup().activeCount()];
+        currentThread().getThreadGroup().enumerate(communicationThreads);
+        for (Thread thread : communicationThreads) {
             thread.stop();
         }
         stop();

@@ -59,6 +59,7 @@ public class ServerController implements Initializable {
                 statusColor.setStyle("-fx-background-color: green; -fx-background-radius: 20px");
                 mainApp.runTCPServer();
                 startServer.setDisable(true);
+                stopServer.setDisable(false);
             }
         });
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
@@ -70,6 +71,7 @@ public class ServerController implements Initializable {
                 statusLabel.setText(SERVER_OFF);
                 statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
                 startServer.setDisable(false);
+                stopServer.setDisable(true);
             }
         });
         consoleOutput.textProperty().addListener(new ChangeListener<String>() {
