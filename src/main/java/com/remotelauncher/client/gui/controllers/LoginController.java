@@ -6,7 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
-import com.remotelauncher.client.CommunicationListener;
+import com.remotelauncher.client.RequestListener;
+import com.remotelauncher.client.ResponseListener;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
@@ -22,10 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController implements Initializable, ResponseListener {
 
     private RemoteLauncher mainApp;
-    private CommunicationListener listener;
+    private RequestListener requestListener;
+    private Response response;
 
     @FXML
     private Button connectButton;
@@ -44,16 +46,11 @@ public class LoginController implements Initializable {
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // TODO: open main app form
                 if (!tokenTextfield.getText().isEmpty()) {
                     Request request = new Request();
                     String token = tokenTextfield.getText();
                     request.setParameter("token", token);
-                    Response response = listener.processRequest(request);
-                    if (response.getParameter("message") != null) {
-                        System.out.printf((String) response.getParameter("message"));
-                        mainApp.openMainFrame();
-                    }
+                    requestListener.sendRequest(request);
                 }
             }
         });
@@ -62,7 +59,7 @@ public class LoginController implements Initializable {
             public void handle(ActionEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                listener.processRequest(request);
+                requestListener.sendRequest(request);
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -80,8 +77,16 @@ public class LoginController implements Initializable {
         this.mainApp = mainApp;
     }
 
-    public void addListener(CommunicationListener listener) {
-        this.listener = listener;
+    public void addRequestListener(RequestListener listener) {
+        requestListener = listener;
     }
 
+    @Override
+    public void receiveResponse(Response response) {
+        this.response = response;
+        if (response != null && response.getParameter("message") != null) {
+            System.out.printf((String) response.getParameter("message"));
+            mainApp.openMainFrame();
+        }
+    }
 }

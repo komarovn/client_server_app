@@ -66,7 +66,7 @@ public class CommunicationThread extends Thread {
             this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             while (!clientSocket.isClosed()) {
-                //TODO: stop peceiving requests when client has been disconnected
+                //stop peceiving requests when client has been disconnected
                 Request request = receiveRequest();
                 Response response = new Response();
                 if (request != null) {
@@ -101,5 +101,14 @@ public class CommunicationThread extends Thread {
 
     public void processRequest(Request request, Response response) {
         receiveToken(request, response);
+    }
+
+    public void stopCommunicationThread() {
+        Response response = new Response();
+        response.setParameter("serverState", "STOPPED");
+        if (!clientSocket.isClosed()) {
+            sendResponse(response);
+        }
+        stop();
     }
 }

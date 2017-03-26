@@ -69,7 +69,7 @@ public class ServerThread extends Thread {
     public synchronized void stopServer() {
         for (Thread thread : communicationThreads) {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
-            thread.stop();
+            ((CommunicationThread) thread).stopCommunicationThread();
         }
         try {
             serverSocket.close();
