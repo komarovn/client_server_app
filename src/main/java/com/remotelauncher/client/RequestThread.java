@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * Thread for sending request to server.
+ */
 public class RequestThread extends Thread implements RequestListener {
 
     private Socket clientSocket;

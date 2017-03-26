@@ -10,6 +10,7 @@ import com.remotelauncher.client.RequestThread;
 import com.remotelauncher.client.ResponseThread;
 import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
+import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import com.remotelauncher.shared.Response;
@@ -80,6 +81,12 @@ public class RemoteLauncher extends Application {
             URL address = getClass().getResource("/fxml/RemoteLauncherGUI.fxml");
             FXMLLoader loader = new FXMLLoader(address);
             Parent root = loader.load();
+            RemoteLauncherController controller =loader.getController();
+            controller.setMainApp(this);
+
+            controller.addRequestListener(requestThread);
+            responseThread.addResponseListener(controller);
+
             stage.getScene().setRoot(root);
             stage.sizeToScene();
         } catch (IOException e) {

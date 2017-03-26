@@ -58,8 +58,7 @@ public class ServerController implements Initializable {
                 statusLabel.setText(SERVER_RUNNING);
                 statusColor.setStyle("-fx-background-color: green; -fx-background-radius: 20px");
                 mainApp.runTCPServer();
-                startServer.setDisable(true);
-                stopServer.setDisable(false);
+                setServerState(true);
             }
         });
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
@@ -70,8 +69,7 @@ public class ServerController implements Initializable {
                 mainApp.stopTCPServer();
                 statusLabel.setText(SERVER_OFF);
                 statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
-                startServer.setDisable(false);
-                stopServer.setDisable(true);
+                setServerState(false);
             }
         });
         consoleOutput.textProperty().addListener(new ChangeListener<String>() {
@@ -95,4 +93,10 @@ public class ServerController implements Initializable {
         System.setOut(printStream);
         System.setErr(printStream);
     }
+
+    public void setServerState(boolean isRunning) {
+        startServer.setDisable(isRunning);
+        stopServer.setDisable(!isRunning);
+    }
+
 }

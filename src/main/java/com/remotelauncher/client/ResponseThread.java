@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Communication with server.
+ * Thread for receiving response from server. Response can be received in background mode, i.e. without sending request.
  */
 public class ResponseThread extends Thread {
 
