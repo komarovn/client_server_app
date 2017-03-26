@@ -20,9 +20,13 @@ public class RemoteLauncherController implements Initializable, ResponseListener
     private RemoteLauncher mainApp;
     private RequestListener requestListener;
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+    }
+
+    @Override
+    public void receiveResponse(Response response) {
 
     }
 
@@ -34,8 +38,4 @@ public class RemoteLauncherController implements Initializable, ResponseListener
         requestListener = listener;
     }
 
-    @Override
-    public void receiveResponse(Response response) {
-
-    }
 }

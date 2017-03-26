@@ -11,4 +11,5 @@ import com.remotelauncher.shared.Request;
 public interface RequestListener {
 
     void sendRequest(Request request);
+
 }

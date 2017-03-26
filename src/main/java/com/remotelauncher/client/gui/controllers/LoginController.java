@@ -67,6 +67,15 @@ public class LoginController implements Initializable, ResponseListener {
         });
     }
 
+    @Override
+    public void receiveResponse(Response response) {
+        this.response = response;
+        if (response != null && response.getParameter("message") != null) {
+            System.out.printf((String) response.getParameter("message"));
+            mainApp.openMainFrame();
+        }
+    }
+
     public void setStatusConnection(boolean isConnected) {
         serverUnavailable.setVisible(!isConnected);
         connectButton.setDisable(!isConnected);
@@ -81,12 +90,4 @@ public class LoginController implements Initializable, ResponseListener {
         requestListener = listener;
     }
 
-    @Override
-    public void receiveResponse(Response response) {
-        this.response = response;
-        if (response != null && response.getParameter("message") != null) {
-            System.out.printf((String) response.getParameter("message"));
-            mainApp.openMainFrame();
-        }
-    }
 }

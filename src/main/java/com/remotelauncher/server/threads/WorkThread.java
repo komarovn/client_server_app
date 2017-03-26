@@ -19,11 +19,9 @@ public class WorkThread extends Thread {
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
     private TaskSession taskSession;
 
-
     public WorkThread(TaskSession taskSession) {
         this.taskSession = taskSession;
     }
-
 
     @Override
     public void run() {

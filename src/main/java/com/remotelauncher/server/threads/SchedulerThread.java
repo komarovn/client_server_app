@@ -17,6 +17,25 @@ public class SchedulerThread extends Thread {
     private Integer workThreadThreshold;
     private Queue<TaskSession> taskSessionsQueue;
 
+    public SchedulerThread(Integer workThreadThreshold) {
+        SchedulerThread.workThreadCounter = 0;
+        this.workThreadThreshold = workThreadThreshold;
+        this.taskSessionsQueue = new LinkedList<>();
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            if (!taskSessionsQueue.isEmpty()) {
+                if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
+                    SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
+                    WorkThread workThread = new WorkThread(taskSessionsQueue.remove());
+                    workThread.start();
+                }
+            }
+        }
+    }
+
     private Queue<TaskSession> getTaskSessionsQueue() {
         return taskSessionsQueue;
     }
@@ -37,22 +56,4 @@ public class SchedulerThread extends Thread {
         }
     }
 
-    public SchedulerThread(Integer workThreadThreshold) {
-        SchedulerThread.workThreadCounter = 0;
-        this.workThreadThreshold = workThreadThreshold;
-        this.taskSessionsQueue = new LinkedList<>();
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            if (!taskSessionsQueue.isEmpty()) {
-                if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
-                    SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
-                    WorkThread workThread = new WorkThread(taskSessionsQueue.remove());
-                    workThread.start();
-                }
-            }
-        }
-    }
 }

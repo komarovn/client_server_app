@@ -25,12 +25,17 @@ import java.util.Queue;
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
  */
-
 public class ServerThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
     private ServerSocket serverSocket = null;
     private List<CommunicationThread> communicationThreads = new ArrayList<>();
+
+    @Override
+    public void run() {
+        init();
+        listenToClients(serverSocket);
+    }
 
     private void init() {
         LOGGER.info("SERVER IS STARTING...");
@@ -58,12 +63,6 @@ public class ServerThread extends Thread {
                 LOGGER.debug("Server socket is closed.");
             }
         }
-    }
-
-    @Override
-    public void run() {
-        init();
-        listenToClients(serverSocket);
     }
 
     public synchronized void stopServer() {
