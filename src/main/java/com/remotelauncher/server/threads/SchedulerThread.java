@@ -15,38 +15,37 @@ import java.util.Queue;
 public class SchedulerThread extends Thread {
 
     private static Integer workThreadCounter;
-    private final Integer workThreadThreshold= Constants.WORK_THREAD_THRESHOLD;
+    private final Integer workThreadThreshold = Constants.WORK_THREAD_THRESHOLD;
     private static Queue<TaskSession> taskSessionsQueue;
 
     public SchedulerThread() {
+        workThreadCounter = 0;
         this.taskSessionsQueue = new LinkedList<>();
     }
 
     @Override
     public void run() {
         while (true) {
-            if (!taskSessionsQueue.isEmpty()) {
-                if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
-                    SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
-                    WorkThread workThread = new WorkThread(SchedulerThread.getTaskSession());
-                    workThread.start();
+            synchronized (taskSessionsQueue) {
+                if (!taskSessionsQueue.isEmpty()) {
+                    if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
+                        SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
+                        WorkThread workThread = new WorkThread(SchedulerThread.getTaskSession());
+                        workThread.start();
+                    }
                 }
             }
         }
     }
 
-    public Queue<TaskSession> getTaskSessionsQueue() {
-        return taskSessionsQueue;
-    }
-
-    public static void addTaskSession(TaskSession taskSession){
+    public static void addTaskSession(TaskSession taskSession) {
         synchronized (SchedulerThread.taskSessionsQueue) {
             taskSessionsQueue.add(taskSession);
         }
     }
 
-    public static TaskSession getTaskSession(){
-        synchronized (SchedulerThread.taskSessionsQueue){
+    public static TaskSession getTaskSession() {
+        synchronized (SchedulerThread.taskSessionsQueue) {
             return taskSessionsQueue.remove();
         }
     }
@@ -59,6 +58,19 @@ public class SchedulerThread extends Thread {
         synchronized (SchedulerThread.workThreadCounter) {
             return workThreadCounter;
         }
+    }
+
+    private void saveTaskQueue(){
+        //Save current taskQueue to DB
+    }
+
+    public void stopSchedulerThread() {
+        while (SchedulerThread.getWorkThreadCounter() != 0) {
+            //Here we are waiting until all the running workthreads finish their task sessions
+            //Kind of soft stopping
+        }
+        saveTaskQueue();
+        stop();
     }
 
 }

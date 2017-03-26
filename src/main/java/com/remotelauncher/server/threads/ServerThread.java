@@ -30,6 +30,7 @@ public class ServerThread extends Thread {
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
     private ServerSocket serverSocket = null;
     private List<CommunicationThread> communicationThreads = new ArrayList<>();
+    SchedulerThread schedulerThread;
 
     @Override
     public void run() {
@@ -39,7 +40,7 @@ public class ServerThread extends Thread {
 
     private void init() {
         LOGGER.info("SERVER IS STARTING...");
-        SchedulerThread schedulerThread = new SchedulerThread();
+        schedulerThread = new SchedulerThread();
         schedulerThread.start();
         try {
             this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
@@ -65,11 +66,13 @@ public class ServerThread extends Thread {
         }
     }
 
+    //TODO: Stop SchedulerThread, WorkThreads and save taskSessionQueue to DB
     public synchronized void stopServer() {
         for (Thread thread : communicationThreads) {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
             ((CommunicationThread) thread).stopCommunicationThread();
         }
+        schedulerThread.stopSchedulerThread();
         try {
             serverSocket.close();
             LOGGER.debug("Server thread is stopped.");
