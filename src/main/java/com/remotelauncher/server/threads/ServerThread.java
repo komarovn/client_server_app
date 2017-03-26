@@ -39,7 +39,7 @@ public class ServerThread extends Thread {
 
     private void init() {
         LOGGER.info("SERVER IS STARTING...");
-        SchedulerThread schedulerThread = new SchedulerThread(Constants.WORK_THREAD_THRESHOLD);
+        SchedulerThread schedulerThread = new SchedulerThread();
         schedulerThread.start();
         try {
             this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
