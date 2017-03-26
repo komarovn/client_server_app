@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.client.CommunicationThread;
 import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
 import com.remotelauncher.shared.Request;
@@ -26,12 +27,15 @@ import java.net.URL;
 public class RemoteLauncher extends Application {
 
     private TCPClient tcpClient;
+    private CommunicationThread communication;
     private Boolean isConnected = false;
     private Stage stage;
 
     public RemoteLauncher() {
         tcpClient = new TCPClient();
         tcpClient.runClient();
+        communication = new CommunicationThread(tcpClient.getClientSocket());
+        communication.start();
     }
 
     @Override
@@ -42,7 +46,8 @@ public class RemoteLauncher extends Application {
             public void handle(WindowEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                processRequest(request);
+                Response response = null;
+                response = communication.processRequest(request);
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -56,12 +61,15 @@ public class RemoteLauncher extends Application {
         LoginController controller = loader.getController();
         controller.setMainApp(this);
 
+        controller.addListener(communication);
+
         isConnected = tcpClient.getConnected();
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
     }
 
+    //TODO: delete
     public Response processRequest(Request request) {
         //return tcpClient.processRequest(request);
         return new Response();

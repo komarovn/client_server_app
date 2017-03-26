@@ -45,7 +45,7 @@
 
     <build>
         <finalName>target</finalName>
-        <outputDirectory>${project.basedir}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+        <outputDirectory>${project.basedir}/${project.build.finalName}/APP-INF/classes</outputDirectory>
 
         <plugins>
             <plugin>

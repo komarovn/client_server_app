@@ -53,7 +53,6 @@ public class CommunicationThread extends Thread {
         Request request = null;
         try {
                 request = (Request) objectInputStream.readObject();
-                objectInputStream.reset();
                 LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
         } catch (IOException|ClassNotFoundException e) {
             LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
@@ -66,13 +65,17 @@ public class CommunicationThread extends Thread {
         try {
             this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            while (clientSocket.isConnected()) {
-                //TODO: stop peceiving request when client doesn't send it. There is endless loop happens.
+            while (!clientSocket.isClosed()) {
+                //TODO: stop peceiving requests when client has been disconnected
                 Request request = receiveRequest();
                 Response response = new Response();
                 if (request != null) {
                     processRequest(request, response);
                     sendResponse(response);
+                }
+                else {
+                    clientSocket.close();
+                    stop();
                 }
             }
         } catch (IOException e) {

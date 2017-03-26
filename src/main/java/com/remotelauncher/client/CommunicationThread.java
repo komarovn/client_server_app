@@ -17,7 +17,7 @@ import java.net.Socket;
 /**
  * Communication with server.
  */
-public class CommunicationThread extends Thread {
+public class CommunicationThread extends Thread implements CommunicationListener {
 
     private Socket clientSocket;
     private ObjectInputStream inputStream;
@@ -40,9 +40,10 @@ public class CommunicationThread extends Thread {
         }
     }
 
+    @Override
     public Response processRequest(Request request) {
         try {
-            if (clientSocket != null) {
+            if (clientSocket != null && clientSocket.isConnected()) {
                 outputStream.writeObject(request);
 
                 // send data to server
@@ -57,9 +58,5 @@ public class CommunicationThread extends Thread {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private void processResponse(Response response) {
-
     }
 }

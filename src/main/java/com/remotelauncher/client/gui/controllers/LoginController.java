@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.client.CommunicationListener;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
@@ -17,9 +18,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
+
+    private List<CommunicationListener> listeners = new ArrayList<>();
 
     @FXML
     private Button connectButton;
@@ -45,10 +50,13 @@ public class LoginController implements Initializable {
                     Request request = new Request();
                     String token = tokenTextfield.getText();
                     request.setParameter("token", token);
-                    Response response = mainApp.processRequest(request);
+                    Response response = null;
+                    for (CommunicationListener listener : listeners) {
+                        response = listener.processRequest(request);
+                    }
                     if (response.getParameter("message") != null) {
                         System.out.printf((String) response.getParameter("message"));
-                        mainApp.openMainFrame();
+                        //mainApp.openMainFrame();
                     }
                 }
             }
@@ -59,6 +67,10 @@ public class LoginController implements Initializable {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
                 mainApp.processRequest(request);
+                Response response = null;
+                for (CommunicationListener listener : listeners) {
+                    response = listener.processRequest(request);
+                }
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -74,6 +86,10 @@ public class LoginController implements Initializable {
 
     public void setMainApp(RemoteLauncher mainApp) {
         this.mainApp = mainApp;
+    }
+
+    public void addListener(CommunicationListener toAdd) {
+        listeners.add(toAdd);
     }
 
 }
