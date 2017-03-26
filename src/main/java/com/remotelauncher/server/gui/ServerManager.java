@@ -41,6 +41,8 @@ public class ServerManager extends Application {
         ServerController controller = loader.getController();
         controller.setMainApp(this);
 
+        controller.setServerState(false);
+
         primaryStage.show();
     }
 }

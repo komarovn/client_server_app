@@ -6,11 +6,14 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.client.RequestThread;
+import com.remotelauncher.client.ResponseThread;
 import com.remotelauncher.client.StringResourses;
 import com.remotelauncher.client.TCPClient;
+import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
 import com.remotelauncher.shared.Request;
-import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.controllers.LoginController;
+import com.remotelauncher.shared.Response;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -26,12 +29,18 @@ import java.net.URL;
 public class RemoteLauncher extends Application {
 
     private TCPClient tcpClient;
+    private ResponseThread responseThread;
+    private RequestThread requestThread;
     private Boolean isConnected = false;
     private Stage stage;
 
     public RemoteLauncher() {
         tcpClient = new TCPClient();
         tcpClient.runClient();
+        responseThread = new ResponseThread(tcpClient.getClientSocket());
+        requestThread = new RequestThread(tcpClient.getClientSocket());
+        responseThread.start();
+        requestThread.start();
     }
 
     @Override
@@ -42,7 +51,9 @@ public class RemoteLauncher extends Application {
             public void handle(WindowEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                processRequest(request);
+                if (!tcpClient.getClientSocket().isClosed()) {
+                    requestThread.sendRequest(request);
+                }
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -56,15 +67,13 @@ public class RemoteLauncher extends Application {
         LoginController controller = loader.getController();
         controller.setMainApp(this);
 
+        controller.addRequestListener(requestThread);
+        responseThread.addResponseListener(controller);
+
         isConnected = tcpClient.getConnected();
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
-    }
-
-    public Response processRequest(Request request) {
-        //return tcpClient.processRequest(request);
-        return new Response();
     }
 
     public void openMainFrame() {
@@ -72,6 +81,12 @@ public class RemoteLauncher extends Application {
             URL address = getClass().getResource("/fxml/RemoteLauncherGUI.fxml");
             FXMLLoader loader = new FXMLLoader(address);
             Parent root = loader.load();
+            RemoteLauncherController controller =loader.getController();
+            controller.setMainApp(this);
+
+            controller.addRequestListener(requestThread);
+            responseThread.addResponseListener(controller);
+
             stage.getScene().setRoot(root);
             stage.sizeToScene();
         } catch (IOException e) {

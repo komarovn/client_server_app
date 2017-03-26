@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.client.RequestListener;
+import com.remotelauncher.client.ResponseListener;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
@@ -17,9 +19,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController implements Initializable, ResponseListener {
+
+    private RemoteLauncher mainApp;
+    private RequestListener requestListener;
+    private Response response;
 
     @FXML
     private Button connectButton;
@@ -33,23 +41,16 @@ public class LoginController implements Initializable {
     @FXML
     private Label serverUnavailable;
 
-    private RemoteLauncher mainApp;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // TODO: open main app form
                 if (!tokenTextfield.getText().isEmpty()) {
                     Request request = new Request();
                     String token = tokenTextfield.getText();
                     request.setParameter("token", token);
-                    Response response = mainApp.processRequest(request);
-                    if (response.getParameter("message") != null) {
-                        System.out.printf((String) response.getParameter("message"));
-                        mainApp.openMainFrame();
-                    }
+                    requestListener.sendRequest(request);
                 }
             }
         });
@@ -58,7 +59,7 @@ public class LoginController implements Initializable {
             public void handle(ActionEvent event) {
                 Request request = new Request();
                 request.setParameter("state", "DISCONNECT");
-                mainApp.processRequest(request);
+                requestListener.sendRequest(request);
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -76,4 +77,16 @@ public class LoginController implements Initializable {
         this.mainApp = mainApp;
     }
 
+    public void addRequestListener(RequestListener listener) {
+        requestListener = listener;
+    }
+
+    @Override
+    public void receiveResponse(Response response) {
+        this.response = response;
+        if (response != null && response.getParameter("message") != null) {
+            System.out.printf((String) response.getParameter("message"));
+            mainApp.openMainFrame();
+        }
+    }
 }
