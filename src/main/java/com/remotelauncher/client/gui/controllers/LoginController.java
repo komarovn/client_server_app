@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable, ResponseListener {
 
     private RemoteLauncher mainApp;
+    private boolean isConnected = false;
     private RequestListener requestListener;
     private Response response;
 
@@ -57,9 +58,11 @@ public class LoginController implements Initializable, ResponseListener {
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Request request = new Request();
-                request.setParameter("state", "DISCONNECT");
-                requestListener.sendRequest(request);
+                if (isConnected) {
+                    Request request = new Request();
+                    request.setParameter("state", "DISCONNECT");
+                    requestListener.sendRequest(request);
+                }
                 System.out.println("App is closed");
                 Platform.exit();
                 System.exit(0);
@@ -68,6 +71,7 @@ public class LoginController implements Initializable, ResponseListener {
     }
 
     public void setStatusConnection(boolean isConnected) {
+        this.isConnected = isConnected;
         serverUnavailable.setVisible(!isConnected);
         connectButton.setDisable(!isConnected);
         tokenTextfield.setDisable(!isConnected);
