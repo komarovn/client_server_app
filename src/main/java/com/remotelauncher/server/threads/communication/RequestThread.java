@@ -19,6 +19,7 @@ import java.net.Socket;
 public class RequestThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
+
     private Socket clientSocket;
     private ObjectInputStream objectInputStream;
 

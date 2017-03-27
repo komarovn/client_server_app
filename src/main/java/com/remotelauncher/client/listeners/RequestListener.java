@@ -4,7 +4,7 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client.interfaces;
+package com.remotelauncher.client.listeners;
 
 import com.remotelauncher.shared.Request;
 

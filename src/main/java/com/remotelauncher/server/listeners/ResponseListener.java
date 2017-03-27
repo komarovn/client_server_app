@@ -4,12 +4,12 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client.interfaces;
+package com.remotelauncher.server.listeners;
 
 import com.remotelauncher.shared.Response;
 
 public interface ResponseListener {
 
-    void receiveResponse(Response response);
+    void sendResponse(Response response);
 
 }

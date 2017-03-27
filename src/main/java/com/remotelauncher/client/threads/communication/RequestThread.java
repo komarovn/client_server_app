@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.client.threads.communication;
 
-import com.remotelauncher.client.interfaces.RequestListener;
+import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.shared.Request;
 
 import java.io.IOException;

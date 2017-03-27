@@ -30,6 +30,7 @@ import java.util.Queue;
 public class ServerThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
+
     private ServerSocket serverSocket = null;
     private List<CommunicationThread> communicationThreads = new ArrayList<>();
     SchedulerThread schedulerThread;

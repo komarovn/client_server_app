@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.server.threads.communication;
 
-import com.remotelauncher.server.interfaces.ResponseListener;
+import com.remotelauncher.server.listeners.ResponseListener;
 import com.remotelauncher.server.threads.CommunicationThread;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
@@ -19,6 +19,7 @@ import java.net.Socket;
 public class ResponseThread extends Thread implements ResponseListener {
 
     private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
+
     private Socket clientSocket;
     private ObjectOutputStream objectOutputStream;
 

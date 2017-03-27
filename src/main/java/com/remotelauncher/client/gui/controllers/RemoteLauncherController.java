@@ -6,8 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
-import com.remotelauncher.client.interfaces.RequestListener;
-import com.remotelauncher.client.interfaces.ResponseListener;
+import com.remotelauncher.client.listeners.RequestListener;
+import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import com.remotelauncher.shared.Response;
 import javafx.fxml.Initializable;

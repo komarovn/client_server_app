@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.client.threads.communication;
 
-import com.remotelauncher.client.interfaces.ResponseListener;
+import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.shared.Response;
 import javafx.application.Platform;
 
