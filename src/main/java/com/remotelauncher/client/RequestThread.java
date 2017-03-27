@@ -30,6 +30,11 @@ public class RequestThread extends Thread implements RequestListener {
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             while (!clientSocket.isClosed()) {
                 // waiting for request.
+                try {
+                    sleep(60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             System.out.print("Failed to create request thread");
