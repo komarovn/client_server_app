@@ -8,6 +8,8 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.Constants;
 import com.remotelauncher.server.data.*;
+import com.remotelauncher.server.threads.communication.RequestThread;
+import com.remotelauncher.server.threads.communication.ResponseThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,16 +27,23 @@ import java.util.Queue;
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
  */
-
 public class ServerThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
+
     private ServerSocket serverSocket = null;
     private List<CommunicationThread> communicationThreads = new ArrayList<>();
+    SchedulerThread schedulerThread;
+
+    @Override
+    public void run() {
+        init();
+        listenToClients(serverSocket);
+    }
 
     private void init() {
         LOGGER.info("SERVER IS STARTING...");
-        SchedulerThread schedulerThread = new SchedulerThread(Constants.WORK_THREAD_THRESHOLD);
+        schedulerThread = new SchedulerThread();
         schedulerThread.start();
         try {
             this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
@@ -51,19 +60,23 @@ public class ServerThread extends Thread {
         while (!serverSocket.isClosed()) {
             try {
                 Socket clientSocket = serverSocket.accept();
+
+                /*
+                RequestThread requestThread = new RequestThread(clientSocket);
+                ResponseThread responseThread = new ResponseThread(clientSocket);
+                requestThread.start();
+                responseThread.start();
+                */
+
+                //TODO: Remove CommunicationThread and its starting after implementing message classification
                 CommunicationThread communicationThread = new CommunicationThread(clientSocket);
                 communicationThreads.add(communicationThread);
                 communicationThread.start();
+
             } catch (IOException ex) {
                 LOGGER.debug("Server socket is closed.");
             }
         }
-    }
-
-    @Override
-    public void run() {
-        init();
-        listenToClients(serverSocket);
     }
 
     public synchronized void stopServer() {
@@ -71,6 +84,7 @@ public class ServerThread extends Thread {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
             ((CommunicationThread) thread).stopCommunicationThread();
         }
+        schedulerThread.stopSchedulerThread();
         try {
             serverSocket.close();
             LOGGER.debug("Server thread is stopped.");

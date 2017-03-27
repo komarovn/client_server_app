@@ -10,32 +10,41 @@ import com.remotelauncher.server.data.TaskSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Client (work) thread operates with one exact client. For N clients there will be N client threads. It provides
- * processing of the request and creating data for response.
- */
+import java.io.IOException;
+
 public class WorkThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
-    private TaskSession taskSession;
 
+    private TaskSession taskSession;
 
     public WorkThread(TaskSession taskSession) {
         this.taskSession = taskSession;
     }
 
-
     @Override
     public void run() {
         //TODO: Execute task session
-        LOGGER.info("WORKTHREAD {} IS STARTED, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
+        LOGGER.info("WORKTHREAD {} IS STARTED! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
+        execute();
+        SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
+    }
+
+    private void execute() {
+        Process execution = null;
+        Runtime runtime = Runtime.getRuntime();
         try {
-            sleep(getId() * 1000);
-        } catch (InterruptedException e) {
+            execution = runtime.exec(taskSession.getTask());
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
-        LOGGER.info("WORKTHREAD {} HAS DONE A TASK, P'IOS! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
+        LOGGER.info("{}'s TASK COMPLETED", taskSession.getAuthor());
+        if (execution.getOutputStream() != null) {
+            LOGGER.info("THAT'S STDPUT: {}", execution.getOutputStream());
+        }
+        if (execution.getErrorStream() != null) {
+            LOGGER.info("THAT'S STDERR: {}", execution.getErrorStream());
+        }
     }
 
 }
