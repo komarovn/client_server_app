@@ -37,6 +37,7 @@ public class RemoteLauncher extends Application {
     public RemoteLauncher() {
         tcpClient = new TCPClient();
         tcpClient.runClient();
+        isConnected = tcpClient.getConnected();
         if (isConnected) {
             responseThread = new ResponseThread(tcpClient.getClientSocket());
             requestThread = new RequestThread(tcpClient.getClientSocket());
@@ -74,7 +75,6 @@ public class RemoteLauncher extends Application {
             responseThread.addResponseListener(controller);
         }
 
-        isConnected = tcpClient.getConnected();
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
