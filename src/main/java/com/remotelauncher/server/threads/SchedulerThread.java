@@ -26,6 +26,11 @@ public class SchedulerThread extends Thread {
     @Override
     public void run() {
         while (true) {
+            try {
+                sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             synchronized (taskSessionsQueue) {
                 if (!taskSessionsQueue.isEmpty()) {
                     if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {

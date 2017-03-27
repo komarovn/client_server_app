@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class TCPServer {
 
     private Logger LOGGER = LoggerFactory.getLogger(TCPServer.class);
-    
+
     private ServerThread server;
 
     public void runServer() {
