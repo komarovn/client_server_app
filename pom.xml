@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remotelauncher</groupId>
     <artifactId>generalmodule</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>general_module</name>
 
@@ -33,17 +33,4 @@
             <version>1.0</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <finalName>target</finalName>
-        <outputDirectory>${project.basedir}/${project.build.finalName}/APP-INF/classes</outputDirectory>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
-        </plugins>
-    </build>
 </project>
