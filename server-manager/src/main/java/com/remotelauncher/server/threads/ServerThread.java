@@ -6,23 +6,15 @@
  */
 package com.remotelauncher.server.threads;
 
-import com.remotelauncher.Constants;
-import com.remotelauncher.server.data.*;
-import com.remotelauncher.server.threads.communication.RequestThread;
-import com.remotelauncher.server.threads.communication.ResponseThread;
+import com.remotelauncher.ServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Server thread runs a server, so the main thread will be free for UI frame
@@ -46,14 +38,14 @@ public class ServerThread extends Thread {
         schedulerThread = new SchedulerThread();
         schedulerThread.start();
         try {
-            this.serverSocket = new ServerSocket(Constants.PORT_NUMBER);
+            this.serverSocket = new ServerSocket(ServerConstants.PORT_NUMBER);
             LOGGER.info("SERVER HAS STARTED.");
         } catch (IOException ex) {
             LOGGER.info("SERVER START HAS FAILED!");
             ex.printStackTrace();
             System.exit(0);
         }
-        LOGGER.info("==== LISTENING FOR PORT {}...", Constants.PORT_NUMBER);
+        LOGGER.info("==== LISTENING FOR PORT {}...", ServerConstants.PORT_NUMBER);
     }
 
     private void listenToClients(ServerSocket serverSocket) {

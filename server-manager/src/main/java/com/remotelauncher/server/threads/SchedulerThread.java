@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.server.threads;
 
-import com.remotelauncher.Constants;
+import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
 
 import java.util.LinkedList;
@@ -15,7 +15,7 @@ import java.util.Queue;
 public class SchedulerThread extends Thread {
 
     private static Integer workThreadCounter;
-    private final Integer workThreadThreshold = Constants.WORK_THREAD_THRESHOLD;
+    private final Integer workThreadThreshold = ServerConstants.WORK_THREAD_THRESHOLD;
     private static Queue<TaskSession> taskSessionsQueue;
 
     public SchedulerThread() {

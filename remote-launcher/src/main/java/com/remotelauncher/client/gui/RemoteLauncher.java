@@ -8,8 +8,8 @@ package com.remotelauncher.client.gui;
 
 import com.remotelauncher.client.threads.communication.RequestThread;
 import com.remotelauncher.client.threads.communication.ResponseThread;
-import com.remotelauncher.client.StringResourses;
-import com.remotelauncher.client.TCPClient;
+import com.remotelauncher.StringResourses;
+import com.remotelauncher.TCPClient;
 import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.client.gui.controllers.LoginController;

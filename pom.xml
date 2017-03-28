@@ -3,7 +3,7 @@
 
     <repositories>
         <repository>
-            <id>remotelauncher</id>
+            <id>client-server-app</id>
             <url>https://github.com/PovelikinRostislav/client_server_app</url>
         </repository>
     </repositories>
@@ -14,7 +14,11 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>general_module</name>
-    <url>http://maven.apache.org</url>
+
+    <modules>
+        <module>remote-launcher</module>
+        <module>server-manager</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -27,19 +31,6 @@
             <groupId>org.codehaus.mojo.archetypes</groupId>
             <artifactId>appframework</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.24</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.24</version>
         </dependency>
     </dependencies>
 
