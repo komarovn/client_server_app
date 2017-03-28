@@ -8,10 +8,13 @@ package com.remotelauncher.server.gui;
 
 import com.remotelauncher.server.TCPServer;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.net.URL;
 
@@ -34,6 +37,14 @@ public class ServerManager extends Application {
 
         controller.setServerState(false);
 
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                tcpServer.stopServer();
+                Platform.exit();
+                System.exit(0);
+            }
+        });
         primaryStage.show();
     }
 
