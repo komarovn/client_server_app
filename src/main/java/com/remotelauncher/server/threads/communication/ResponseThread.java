@@ -32,6 +32,11 @@ public class ResponseThread extends Thread implements ResponseListener {
         try {
             objectOutputStream = (ObjectOutputStream) clientSocket.getOutputStream();
             while (!clientSocket.isClosed()) {
+                try {
+                    sleep(60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // waiting for response to send it.
             }
         } catch (IOException e) {
