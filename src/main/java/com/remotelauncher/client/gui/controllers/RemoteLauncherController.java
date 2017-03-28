@@ -6,8 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
-import com.remotelauncher.client.RequestListener;
-import com.remotelauncher.client.ResponseListener;
+import com.remotelauncher.client.listeners.RequestListener;
+import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import com.remotelauncher.shared.Response;
 import javafx.collections.FXCollections;
@@ -41,6 +41,11 @@ public class RemoteLauncherController implements Initializable, ResponseListener
         taskQueue.setItems(taskQueueItems);
     }
 
+    @Override
+    public void receiveResponse(Response response) {
+
+    }
+
     public void setMainApp(RemoteLauncher mainApp) {
         this.mainApp = mainApp;
     }
@@ -49,8 +54,4 @@ public class RemoteLauncherController implements Initializable, ResponseListener
         requestListener = listener;
     }
 
-    @Override
-    public void receiveResponse(Response response) {
-
-    }
 }

@@ -20,7 +20,7 @@ import java.net.Socket;
  * Communication Thread is used for communicating with clients. It must receive request and send response only.
  */
 public class CommunicationThread extends Thread {
-    //TODO: add functionality of communication with clients
+
     private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
 
     private Socket clientSocket;
@@ -29,6 +29,29 @@ public class CommunicationThread extends Thread {
 
     public CommunicationThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            while (!clientSocket.isClosed()) {
+                //stop peceiving requests when client has been disconnected
+                Request request = receiveRequest();
+                Response response = new Response();
+                if (request != null) {
+                    processRequest(request, response);
+                    sendResponse(response);
+                }
+                else {
+                    clientSocket.close();
+                    stop();
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.info("Client is offline: client's address: {}", clientSocket.getInetAddress());
+        }
     }
 
     /**
@@ -60,29 +83,6 @@ public class CommunicationThread extends Thread {
         return request;
     }
 
-    @Override
-    public void run() {
-        try {
-            this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            while (!clientSocket.isClosed()) {
-                //stop peceiving requests when client has been disconnected
-                Request request = receiveRequest();
-                Response response = new Response();
-                if (request != null) {
-                    processRequest(request, response);
-                    sendResponse(response);
-                }
-                else {
-                    clientSocket.close();
-                    stop();
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.info("Client is offline: client's address: {}", clientSocket.getInetAddress());
-        }
-    }
-
     //TODO: remove work with token to another class
     private void receiveToken(Request token, Response response) {
         try {
@@ -111,4 +111,5 @@ public class CommunicationThread extends Thread {
         }
         stop();
     }
+
 }

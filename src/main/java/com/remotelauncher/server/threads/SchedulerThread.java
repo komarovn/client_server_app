@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.server.threads;
 
+import com.remotelauncher.Constants;
 import com.remotelauncher.server.data.TaskSession;
 
 import java.util.LinkedList;
@@ -14,21 +15,48 @@ import java.util.Queue;
 public class SchedulerThread extends Thread {
 
     private static Integer workThreadCounter;
-    private Integer workThreadThreshold;
-    private Queue<TaskSession> taskSessionsQueue;
+    private final Integer workThreadThreshold = Constants.WORK_THREAD_THRESHOLD;
+    private static Queue<TaskSession> taskSessionsQueue;
 
-    private Queue<TaskSession> getTaskSessionsQueue() {
-        return taskSessionsQueue;
+    public SchedulerThread() {
+        workThreadCounter = 0;
+        this.taskSessionsQueue = new LinkedList<>();
     }
 
-    public void setTaskSessionsQueue(Queue<TaskSession> taskSessionsQueue) {
-        this.taskSessionsQueue = taskSessionsQueue;
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (taskSessionsQueue) {
+                if (!taskSessionsQueue.isEmpty()) {
+                    if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
+                        SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
+                        WorkThread workThread = new WorkThread(SchedulerThread.getTaskSession());
+                        workThread.start();
+                    }
+                }
+            }
+        }
+    }
+
+    public static void addTaskSession(TaskSession taskSession) {
+        synchronized (SchedulerThread.taskSessionsQueue) {
+            taskSessionsQueue.add(taskSession);
+        }
+    }
+
+    public static TaskSession getTaskSession() {
+        synchronized (SchedulerThread.taskSessionsQueue) {
+            return taskSessionsQueue.remove();
+        }
     }
 
     public static void setWorkThreadCounter(Integer workThreadCounter) {
-        synchronized (SchedulerThread.workThreadCounter) {
-            SchedulerThread.workThreadCounter = workThreadCounter;
-        }
+        SchedulerThread.workThreadCounter = workThreadCounter;
     }
 
     public static Integer getWorkThreadCounter() {
@@ -37,22 +65,17 @@ public class SchedulerThread extends Thread {
         }
     }
 
-    public SchedulerThread(Integer workThreadThreshold) {
-        SchedulerThread.workThreadCounter = 0;
-        this.workThreadThreshold = workThreadThreshold;
-        this.taskSessionsQueue = new LinkedList<>();
+    private void saveTaskQueue(){
+        //Save current taskQueue to DB
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            if (!taskSessionsQueue.isEmpty()) {
-                if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
-                    SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
-                    WorkThread workThread = new WorkThread(taskSessionsQueue.remove());
-                    workThread.start();
-                }
-            }
+    public void stopSchedulerThread() {
+        while (SchedulerThread.getWorkThreadCounter() != 0) {
+            //Here we are waiting until all the running workthreads finish their task sessions
+            //Kind of soft stopping
         }
+        saveTaskQueue();
+        stop();
     }
+
 }

@@ -22,15 +22,6 @@ public class ServerManager extends Application {
 
     public ServerManager() {}
 
-    public void runTCPServer() {
-        tcpServer = new TCPServer();
-        tcpServer.runServer();
-    }
-
-    public void stopTCPServer() {
-        tcpServer.stopServer();
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL address = getClass().getResource("/fxml/ServerGUI.fxml");
@@ -45,4 +36,14 @@ public class ServerManager extends Application {
 
         primaryStage.show();
     }
+
+    public void runTCPServer() {
+        tcpServer = new TCPServer();
+        tcpServer.runServer();
+    }
+
+    public void stopTCPServer() {
+        tcpServer.stopServer();
+    }
+
 }

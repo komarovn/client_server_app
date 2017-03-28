@@ -4,8 +4,9 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client;
+package com.remotelauncher.client.threads.communication;
 
+import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.shared.Request;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class RequestThread extends Thread implements RequestListener {
         try {
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             while (!clientSocket.isClosed()) {
-                // waiting for request.
+                // waiting for request to send it.
                 try {
                     sleep(60000);
                 } catch (InterruptedException e) {

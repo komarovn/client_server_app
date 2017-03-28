@@ -21,4 +21,5 @@ public class ClientData {
     public void setWorkThreadId(long workThreadId) {
         this.workThreadId = workThreadId;
     }
+
 }

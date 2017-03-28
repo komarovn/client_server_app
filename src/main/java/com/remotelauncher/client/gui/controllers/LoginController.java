@@ -6,8 +6,8 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
-import com.remotelauncher.client.RequestListener;
-import com.remotelauncher.client.ResponseListener;
+import com.remotelauncher.client.listeners.RequestListener;
+import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
@@ -19,8 +19,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable, ResponseListener {
@@ -70,6 +68,15 @@ public class LoginController implements Initializable, ResponseListener {
         });
     }
 
+    @Override
+    public void receiveResponse(Response response) {
+        this.response = response;
+        if (response != null && response.getParameter("message") != null) {
+            System.out.printf((String) response.getParameter("message"));
+            mainApp.openMainFrame();
+        }
+    }
+
     public void setStatusConnection(boolean isConnected) {
         this.isConnected = isConnected;
         serverUnavailable.setVisible(!isConnected);
@@ -85,12 +92,4 @@ public class LoginController implements Initializable, ResponseListener {
         requestListener = listener;
     }
 
-    @Override
-    public void receiveResponse(Response response) {
-        this.response = response;
-        if (response != null && response.getParameter("message") != null) {
-            System.out.printf((String) response.getParameter("message"));
-            mainApp.openMainFrame();
-        }
-    }
 }
