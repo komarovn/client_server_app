@@ -36,10 +36,13 @@ public class RemoteLauncher extends Application {
     public RemoteLauncher() {
         tcpClient = new TCPClient();
         tcpClient.runClient();
-        responseThread = new ResponseThread(tcpClient.getClientSocket());
-        requestThread = new RequestThread(tcpClient.getClientSocket());
-        responseThread.start();
-        requestThread.start();
+        isConnected = tcpClient.getConnected();
+        if (isConnected) {
+            responseThread = new ResponseThread(tcpClient.getClientSocket());
+            requestThread = new RequestThread(tcpClient.getClientSocket());
+            responseThread.start();
+            requestThread.start();
+        }
     }
 
     @Override
@@ -48,9 +51,9 @@ public class RemoteLauncher extends Application {
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                Request request = new Request();
-                request.setParameter("state", "DISCONNECT");
-                if (!tcpClient.getClientSocket().isClosed()) {
+                if (tcpClient.getClientSocket() != null && !tcpClient.getClientSocket().isClosed()) {
+                    Request request = new Request();
+                    request.setParameter("state", "DISCONNECT");
                     requestThread.sendRequest(request);
                 }
                 System.out.println("App is closed");
@@ -67,9 +70,10 @@ public class RemoteLauncher extends Application {
         controller.setMainApp(this);
 
         controller.addRequestListener(requestThread);
-        responseThread.addResponseListener(controller);
+        if (responseThread != null) {
+            responseThread.addResponseListener(controller);
+        }
 
-        isConnected = tcpClient.getConnected();
         controller.setStatusConnection(isConnected);
 
         primaryStage.show();
