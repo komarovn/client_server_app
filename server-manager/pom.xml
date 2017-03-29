@@ -26,7 +26,7 @@
     </dependencies>
 
     <build>
-        <finalName>server-manager</finalName>
+        <finalName>target</finalName>
         <outputDirectory>${project.basedir}/${project.build.finalName}/APP-INF/classes</outputDirectory>
         <plugins>
             <plugin>

@@ -14,7 +14,7 @@
     </dependencies>
 
     <build>
-        <finalName>remote-launcher</finalName>
+        <finalName>target</finalName>
         <outputDirectory>${project.basedir}/${project.build.finalName}/APP-INF/classes</outputDirectory>
         <plugins>
             <plugin>
