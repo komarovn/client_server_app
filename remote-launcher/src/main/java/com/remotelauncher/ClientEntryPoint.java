@@ -4,15 +4,15 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.server;
+package com.remotelauncher;
 
-import com.remotelauncher.server.gui.ServerManager;
+import com.remotelauncher.client.gui.RemoteLauncher;
 import javafx.application.Application;
 
-public class ServerEntryPoint {
+public class ClientEntryPoint {
 
     public static void main(String[] args) {
-        Application.launch(ServerManager.class);
+        Application.launch(RemoteLauncher.class);
     }
 
 }

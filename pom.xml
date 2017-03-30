@@ -3,7 +3,7 @@
 
     <repositories>
         <repository>
-            <id>remotelauncher</id>
+            <id>client-server-app</id>
             <url>https://github.com/PovelikinRostislav/client_server_app</url>
         </repository>
     </repositories>
@@ -11,10 +11,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remotelauncher</groupId>
     <artifactId>generalmodule</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>general_module</name>
-    <url>http://maven.apache.org</url>
+
+    <modules>
+        <module>remote-launcher</module>
+        <module>server-manager</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -28,31 +32,5 @@
             <artifactId>appframework</artifactId>
             <version>1.0</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.24</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.24</version>
-        </dependency>
     </dependencies>
-
-    <build>
-        <finalName>target</finalName>
-        <outputDirectory>${project.basedir}/${project.build.finalName}/APP-INF/classes</outputDirectory>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
-        </plugins>
-    </build>
 </project>

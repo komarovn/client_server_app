@@ -4,9 +4,7 @@
  * Developed by Nikolay Komarov and Rostislav Povelikin
  * UNN, 2017
  */
-package com.remotelauncher.client;
-
-import com.remotelauncher.Constants;
+package com.remotelauncher;
 
 import java.net.ConnectException;
 import java.net.Socket;
@@ -19,7 +17,7 @@ public class TCPClient {
     public void runClient() {
         try {
             try {
-                clientSocket = new Socket(Constants.SERVER_NAME, Constants.PORT_NUMBER);
+                clientSocket = new Socket(ClientConstants.SERVER_NAME, ClientConstants.PORT_NUMBER);
                 isConnected = true;
                 System.out.println("Connection established.");
             } catch (ConnectException e) {
