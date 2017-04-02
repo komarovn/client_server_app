@@ -7,7 +7,7 @@
 package com.remotelauncher.server.threads.communication;
 
 import com.remotelauncher.server.listeners.ResponseListener;
-import com.remotelauncher.server.threads.CommunicationThread;
+import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import java.net.Socket;
 
 public class ResponseThread extends Thread implements ResponseListener {
 
-    private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
+    private Logger LOGGER = LoggerFactory.getLogger(ResponseThread.class);
 
     private Socket clientSocket;
     private ObjectOutputStream objectOutputStream;
@@ -30,7 +30,7 @@ public class ResponseThread extends Thread implements ResponseListener {
     @Override
     public void run() {
         try {
-            objectOutputStream = (ObjectOutputStream) clientSocket.getOutputStream();
+            objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             while (!clientSocket.isClosed()) {
                 try {
                     sleep(60000);
@@ -49,14 +49,16 @@ public class ResponseThread extends Thread implements ResponseListener {
         try {
             if (clientSocket != null && !clientSocket.isClosed()) {
                 objectOutputStream.writeObject(response);
+                LOGGER.debug("Client's address: {}: send response: {}", clientSocket.getInetAddress(), response.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void stopCommunication() {
+    public void stopResponseThread() {
         Response response = new Response();
+        response.setParameter("type", MessageType.ADMINISTRATIVE);
         response.setParameter("serverState", "STOPPED");
         if (!clientSocket.isClosed()) {
             sendResponse(response);
