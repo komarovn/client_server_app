@@ -58,12 +58,14 @@ public class ResponseThread extends Thread {
     private Response receiveResponse() {
         try {
             if (clientSocket != null && !clientSocket.isClosed()) {
-                if (!clientSocket.isClosed()) {
-                    return (Response) inputStream.readObject();
-                }
+                return (Response) inputStream.readObject();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                clientSocket.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
         return null;
     }

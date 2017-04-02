@@ -9,6 +9,7 @@ package com.remotelauncher.client.gui.controllers;
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
+import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import javafx.beans.value.ChangeListener;
@@ -125,6 +126,8 @@ public class RemoteLauncherController implements Initializable, ResponseListener
             byte [] data  = new byte [(int) file.length()];
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
             inputStream.read(data, 0, data.length);
+            //TODO: Type of message
+            request.setParameter("type", MessageType.TASKSESSION);
             request.setParameter("taskFile", data);
             request.setParameter("taskFileSize", data.length);
             requestListener.sendRequest(request);

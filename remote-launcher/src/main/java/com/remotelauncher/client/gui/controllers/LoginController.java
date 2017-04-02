@@ -8,9 +8,11 @@ package com.remotelauncher.client.gui.controllers;
 
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
+import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
+import com.sun.xml.internal.bind.marshaller.MinimumEscapeHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -48,6 +50,7 @@ public class LoginController implements Initializable, ResponseListener {
                 if (!tokenTextfield.getText().isEmpty()) {
                     Request request = new Request();
                     String token = tokenTextfield.getText();
+                    request.setParameter("type", MessageType.LOGIN);
                     request.setParameter("token", token);
                     requestListener.sendRequest(request);
                 }
@@ -58,6 +61,7 @@ public class LoginController implements Initializable, ResponseListener {
             public void handle(ActionEvent event) {
                 if (isConnected) {
                     Request request = new Request();
+                    request.setParameter("type", MessageType.ADMINISTRATIVE);
                     request.setParameter("state", "DISCONNECT");
                     requestListener.sendRequest(request);
                 }
