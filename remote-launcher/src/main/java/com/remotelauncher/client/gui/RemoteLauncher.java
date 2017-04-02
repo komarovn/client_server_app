@@ -11,6 +11,7 @@ import com.remotelauncher.client.threads.communication.ResponseThread;
 import com.remotelauncher.StringResourses;
 import com.remotelauncher.TCPClient;
 import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
+import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import javafx.application.Application;
@@ -53,6 +54,7 @@ public class RemoteLauncher extends Application {
             public void handle(WindowEvent event) {
                 if (tcpClient.getClientSocket() != null && !tcpClient.getClientSocket().isClosed()) {
                     Request request = new Request();
+                    request.setParameter("type", MessageType.ADMINISTRATIVE);
                     request.setParameter("state", "DISCONNECT");
                     requestThread.sendRequest(request);
                 }
