@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.server.threads.communication;
 
-import com.remotelauncher.server.threads.CommunicationThread;
+import com.remotelauncher.server.listeners.ResponseListener;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
@@ -18,10 +18,11 @@ import java.net.Socket;
 
 public class RequestThread extends Thread {
 
-    private Logger LOGGER = LoggerFactory.getLogger(CommunicationThread.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RequestThread.class);
 
     private Socket clientSocket;
     private ObjectInputStream objectInputStream;
+    private ResponseListener responseListener;
 
     public RequestThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -38,6 +39,7 @@ public class RequestThread extends Thread {
             final Request request = receiveRequest();
             if (request != null) {
                 //TODO: Parse requests
+                processRequest(request);
             } else {
                 try {
                     clientSocket.close();
@@ -50,23 +52,26 @@ public class RequestThread extends Thread {
     }
 
     public Request receiveRequest() {
+        Request request = null;
         try {
             if (clientSocket != null && !clientSocket.isClosed()) {
-                if (!clientSocket.isClosed()) {
-                    return (Request) objectInputStream.readObject();
-                }
+                request = (Request) objectInputStream.readObject();
+                LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException|ClassNotFoundException e) {
+            LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
         }
-        return null;
+        return request;
     }
 
-    private void receiveToken(Request token, Response response) {
+    public void addListener(ResponseListener responseListener){
+        this.responseListener = responseListener;
+    }
+
+    private void receiveToken(Request token) {
         try {
             String tok = (String) token.getParameter("token");
             //TODO: put user's token to DB.
-            response.setParameter("message", "KOLYAN S PABHNHHbIX POLYAN");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,8 +82,15 @@ public class RequestThread extends Thread {
         return userId;
     }
 
-    public void processRequest(Request request, Response response) {
-        receiveToken(request, response);
+    public void processRequest(Request request) {
+        Response response = new Response();
+        receiveToken(request);
+        response.setParameter("message", "WELL CUM, PSINA!");
+        responseListener.sendResponse(response);
+    }
+
+    public void stopRequestThread(){
+        stop();
     }
 
 }

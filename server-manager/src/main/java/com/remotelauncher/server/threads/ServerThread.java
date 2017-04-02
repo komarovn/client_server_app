@@ -7,6 +7,8 @@
 package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
+import com.remotelauncher.server.threads.communication.RequestThread;
+import com.remotelauncher.server.threads.communication.ResponseThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,7 @@ public class ServerThread extends Thread {
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
 
     private ServerSocket serverSocket = null;
-    private List<CommunicationThread> communicationThreads = new ArrayList<>();
+    private List<Thread> communicationThreads = new ArrayList<>();
     SchedulerThread schedulerThread;
 
     @Override
@@ -52,19 +54,13 @@ public class ServerThread extends Thread {
         while (!serverSocket.isClosed()) {
             try {
                 Socket clientSocket = serverSocket.accept();
-
-                /*
                 RequestThread requestThread = new RequestThread(clientSocket);
                 ResponseThread responseThread = new ResponseThread(clientSocket);
+                requestThread.addListener(responseThread);
                 requestThread.start();
                 responseThread.start();
-                */
-
-                //TODO: Remove CommunicationThread and its starting after implementing message classification
-                CommunicationThread communicationThread = new CommunicationThread(clientSocket);
-                communicationThreads.add(communicationThread);
-                communicationThread.start();
-
+                communicationThreads.add(responseThread);
+                communicationThreads.add(requestThread);
             } catch (IOException ex) {
                 LOGGER.debug("Server socket is closed.");
             }
@@ -74,7 +70,12 @@ public class ServerThread extends Thread {
     public synchronized void stopServer() {
         for (Thread thread : communicationThreads) {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
-            ((CommunicationThread) thread).stopCommunicationThread();
+            if (thread instanceof RequestThread){
+                ((RequestThread) thread).stopRequestThread();
+            }
+            if (thread instanceof ResponseThread){
+                ((ResponseThread) thread).stopResponseThread();
+            }
         }
         schedulerThread.stopSchedulerThread();
         try {
