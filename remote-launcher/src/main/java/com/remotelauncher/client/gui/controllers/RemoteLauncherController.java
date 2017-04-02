@@ -9,6 +9,7 @@ package com.remotelauncher.client.gui.controllers;
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
+import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,7 +25,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -33,7 +37,7 @@ public class RemoteLauncherController implements Initializable, ResponseListener
 
     private RemoteLauncher mainApp;
     private RequestListener requestListener;
-    private ObservableList taskQueueItems;
+    private ObservableList taskQueueItems = FXCollections.observableArrayList();
 
     @FXML
     private Button loadFile;
@@ -49,7 +53,6 @@ public class RemoteLauncherController implements Initializable, ResponseListener
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        taskQueueItems = FXCollections.observableArrayList("One", "Two", "Three", "Four");
         taskQueue.setItems(taskQueueItems);
 
         loadFile.setOnAction(new EventHandler<ActionEvent>() {
@@ -81,10 +84,12 @@ public class RemoteLauncherController implements Initializable, ResponseListener
         createTask.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String filePathValue = filePath.getText();
-                taskQueueItems.add(filePathValue);
-                taskQueue.setItems(taskQueueItems);
+                sendFile();
                 filePath.setText(CHOOSE_A_FILE);
+
+                //TODO: delete next 2 rows after implementing task queue on server. New task will be added from response
+                taskQueueItems.add(filePath.getText());
+                taskQueue.setItems(taskQueueItems);
             }
         });
     }
@@ -104,9 +109,27 @@ public class RemoteLauncherController implements Initializable, ResponseListener
 
     private void openChooseFileDialog() {
         FileChooser openFileDialog = new FileChooser();
+        openFileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.bat", "*.java"));
+        openFileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("Batch files (*.bat)", "*.bat"));
+        openFileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("Java files (*.java)", "*.java"));
         File file = openFileDialog.showOpenDialog(loadFile.getScene().getWindow());
         if (file != null) {
             filePath.setText(file.getAbsolutePath());
+        }
+    }
+
+    private void sendFile() {
+        try {
+            Request request = new Request();
+            File file = new File(filePath.getText());
+            byte [] data  = new byte [(int) file.length()];
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            inputStream.read(data, 0, data.length);
+            request.setParameter("taskFile", data);
+            request.setParameter("taskFileSize", data.length);
+            requestListener.sendRequest(request);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
