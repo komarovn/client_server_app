@@ -6,7 +6,9 @@
  */
 package com.remotelauncher.server.threads.communication;
 
+import com.remotelauncher.server.RequestProcessor;
 import com.remotelauncher.server.listeners.ResponseListener;
+import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
@@ -23,9 +25,11 @@ public class RequestThread extends Thread {
     private Socket clientSocket;
     private ObjectInputStream objectInputStream;
     private ResponseListener responseListener;
+    private RequestProcessor requestProcessor;
 
     public RequestThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
+        this.requestProcessor = new RequestProcessor();
     }
 
     @Override
@@ -58,38 +62,25 @@ public class RequestThread extends Thread {
                 request = (Request) objectInputStream.readObject();
                 LOGGER.debug("Client's address: {}, Received request: {}", clientSocket.getInetAddress(), request.toString());
             }
-        } catch (IOException|ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             LOGGER.debug("Request is failed: client's address: {}", clientSocket.getInetAddress());
         }
         return request;
     }
 
-    public void addListener(ResponseListener responseListener){
+    public void addListener(ResponseListener responseListener) {
         this.responseListener = responseListener;
     }
 
-    private void receiveToken(Request token) {
-        try {
-            String tok = (String) token.getParameter("token");
-            //TODO: put user's token to DB.
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    private String receiveUserId(String token) {
-        String userId = Integer.toString(token.hashCode());
-        return userId;
-    }
 
     public void processRequest(Request request) {
         Response response = new Response();
-        receiveToken(request);
-        response.setParameter("message", "WELL CUM, PSINA!");
+        requestProcessor.process(request, response);
         responseListener.sendResponse(response);
     }
 
-    public void stopRequestThread(){
+    public void stopRequestThread() {
         stop();
     }
 
