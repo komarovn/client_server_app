@@ -72,8 +72,6 @@ public class RequestThread extends Thread {
         this.responseListener = responseListener;
     }
 
-
-
     public void processRequest(Request request) {
         Response response = new Response();
         requestProcessor.process(request, response);
