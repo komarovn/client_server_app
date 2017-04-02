@@ -6,15 +6,19 @@
  */
 package com.remotelauncher.server;
 
+import com.remotelauncher.server.threads.ServerThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.rmi.server.ExportException;
+import java.sql.Blob;
+import java.sql.PreparedStatement;
 
 public class RequestProcessor {
 
@@ -66,12 +70,12 @@ public class RequestProcessor {
     private void receiveTaskSession(Request request, Response response) {
         int taskFileSize = (Integer) (request.getParameter("taskFileSize"));
         byte[] data = (byte[]) request.getParameter("taskFile");
-        String fileName = "c:/temp/javatemp";
-        BufferedOutputStream bufferedOutputStream = null;
         try {
-            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fileName));
-            bufferedOutputStream.write(data, 0, taskFileSize);
-            bufferedOutputStream.flush();
+            Blob blob = new SerialBlob(data);
+            String query = "INSERT INTO remotelauncher.tasks VALUES(20001, ?, 0, null, 10001)";
+            PreparedStatement statement = ServerThread.getConnection().prepareStatement(query);
+            statement.setBlob(1, blob);
+            statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

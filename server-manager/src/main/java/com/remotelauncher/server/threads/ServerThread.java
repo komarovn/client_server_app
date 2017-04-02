@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,19 @@ public class ServerThread extends Thread {
 
     private ServerSocket serverSocket = null;
     private List<Thread> communicationThreads = new ArrayList<>();
-    SchedulerThread schedulerThread;
+    private SchedulerThread schedulerThread;
+    private static Connection connection;
+
+    static {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/remotelauncher?useSSL=false",
+                    "root",
+                    "root");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
@@ -70,10 +83,10 @@ public class ServerThread extends Thread {
     public synchronized void stopServer() {
         for (Thread thread : communicationThreads) {
             LOGGER.debug("Communication thread {} is stopped.", thread.getId());
-            if (thread instanceof RequestThread){
+            if (thread instanceof RequestThread) {
                 ((RequestThread) thread).stopRequestThread();
             }
-            if (thread instanceof ResponseThread){
+            if (thread instanceof ResponseThread) {
                 ((ResponseThread) thread).stopResponseThread();
             }
         }
@@ -81,10 +94,33 @@ public class ServerThread extends Thread {
         try {
             serverSocket.close();
             LOGGER.debug("Server thread is stopped.");
+            closeConnection();
             stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public static Connection getConnection() {
+        return connection;
+    }
+
+    public static ResultSet execute(String query) {
+        ResultSet result = null;
+        try {
+            Statement statement = connection.createStatement();
+            result = statement.executeQuery(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void closeConnection() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
