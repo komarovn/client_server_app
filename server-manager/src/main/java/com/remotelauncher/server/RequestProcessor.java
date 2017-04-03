@@ -16,19 +16,26 @@ import java.sql.Blob;
 
 public class RequestProcessor {
 
-    private void receiveToken(Request token, Response response) {
+    private void receiveToken(Request request, Response response) {
         try {
-            String tok = (String) token.getParameter("token");
-            //TODO: put user's token to DB.
+            String token = (String) request.getParameter("token");
+            String password = (String) request.getParameter("password");
+            if (ServerThread.getDatabaseOperations().isUserExists(token)) {
+                if (ServerThread.getDatabaseOperations().checkPasswordForUser(token, password)) {
+                    response.setParameter("message", "accept");
+                    //TODO: do smth with user id
+                }
+                else {
+                    response.setParameter("message", "incorrect-password");
+                }
+            }
+            else {
+                ServerThread.getDatabaseOperations().createNewUser(token, password);
+                response.setParameter("message", "accept-new-user");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.setParameter("message", "Welcome!");
-    }
-
-    private String receiveUserId(String token) {
-        String userId = Integer.toString(token.hashCode());
-        return userId;
     }
 
     public void process(Request request, Response response) {

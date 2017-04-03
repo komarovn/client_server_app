@@ -9,32 +9,39 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.remotelauncher.client.gui.controllers.LoginController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="533.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.remotelauncher.client.gui.controllers.LoginController">
    <children>
-      <Label layoutX="193.0" layoutY="48.0" text="Welcome!" textAlignment="CENTER">
+      <Label layoutX="209.0" layoutY="50.0" text="Welcome!" textAlignment="CENTER">
          <font>
             <Font size="26.0" />
          </font></Label>
-      <Label layoutX="51.0" layoutY="144.0" text="Token:" textAlignment="RIGHT">
+      <Label layoutX="38.0" layoutY="146.0" text="Your Name:" textAlignment="RIGHT">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <TextField fx:id="tokenTextfield" layoutX="107.0" layoutY="142.0" prefHeight="25.0" prefWidth="287.0" />
-      <Button fx:id="connectButton" layoutX="138.0" layoutY="198.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Connect">
+      <TextField fx:id="tokenTextfield" layoutX="123.0" layoutY="144.0" prefHeight="25.0" prefWidth="287.0" />
+      <Button fx:id="connectButton" layoutX="154.0" layoutY="252.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Connect">
          <font>
             <Font size="15.0" />
          </font>
       </Button>
-      <Button fx:id="exitButton" layoutX="261.0" layoutY="198.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Exit">
+      <Button fx:id="exitButton" layoutX="277.0" layoutY="252.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Exit">
          <font>
             <Font size="15.0" />
          </font>
       </Button>
-      <Label fx:id="serverUnavailable" layoutX="184.0" layoutY="109.0" text="Server is unavailable now" textAlignment="CENTER" />
+      <Label fx:id="statusLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="200.0" layoutY="111.0" text="Server is unavailable now" textAlignment="CENTER" />
+      <Label layoutX="50.0" layoutY="184.0" text="Password:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="password" layoutX="123.0" layoutY="182.0" prefHeight="25.0" prefWidth="287.0" />
    </children>
 </Pane>

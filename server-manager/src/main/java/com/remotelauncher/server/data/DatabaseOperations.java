@@ -52,9 +52,36 @@ public class DatabaseOperations {
         }
     }
 
+    public boolean isUserExists(String name) {
+        if (name == null) throw new NullPointerException();
+        String query = "SELECT * FROM remotelauncher.users WHERE `name` = '" + name + "'";
+        ResultSet result = executeSingleQuery(query);
+        try {
+            if (result.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void createNewUser(String name, String password) {
         String query = "INSERT INTO remotelauncher.users (`name`, `password`) VALUES(?, ?)";
         executeStatement(query, name, password);
+    }
+
+    public boolean checkPasswordForUser(String name, String password) {
+        try {
+            String query = "SELECT `password` FROM remotelauncher.users WHERE `name` = '" + name + "'";
+            ResultSet result = executeSingleQuery(query);
+            if (result.next() && result.getString(1).equals(password)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void insertNewTask(Object task, String userId) {

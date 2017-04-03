@@ -24,6 +24,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable, ResponseListener {
+    private final String PASSWORD_INCORRECT = "Password is incorrect!";
+    private final String SERVER_ANAVAILABLE = "Server is anavailable now";
+    private final String FILL_FIELDS = "Please, fill your name and password";
 
     private RemoteLauncher mainApp;
     private boolean isConnected = false;
@@ -40,19 +43,27 @@ public class LoginController implements Initializable, ResponseListener {
     private TextField tokenTextfield;
 
     @FXML
-    private Label serverUnavailable;
+    private PasswordField password;
+
+    @FXML
+    private Label statusLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (!tokenTextfield.getText().isEmpty()) {
+                if (!tokenTextfield.getText().isEmpty() && !password.getText().isEmpty()) {
+                    statusLabel.setVisible(false);
                     Request request = new Request();
-                    String token = tokenTextfield.getText();
                     request.setParameter("type", MessageType.LOGIN);
-                    request.setParameter("token", token);
+                    request.setParameter("token", tokenTextfield.getText());
+                    request.setParameter("password", password.getText());
                     requestListener.sendRequest(request);
+                }
+                else {
+                    statusLabel.setText(FILL_FIELDS);
+                    statusLabel.setVisible(true);
                 }
             }
         });
@@ -75,17 +86,29 @@ public class LoginController implements Initializable, ResponseListener {
     @Override
     public void receiveResponse(Response response) {
         this.response = response;
-        if (response != null && response.getParameter("message") != null) {
-            System.out.printf((String) response.getParameter("message"));
-            mainApp.openMainFrame();
+        if (response != null) {
+            String message = (String) response.getParameter("message");
+            if (message != null) {
+                System.out.printf((String) response.getParameter("message"));
+                if (message.equals("incorrect-password")) {
+                    statusLabel.setText(PASSWORD_INCORRECT);
+                    statusLabel.setVisible(true);
+                }
+                else {
+                    statusLabel.setVisible(false);
+                    mainApp.openMainFrame();
+                }
+            }
         }
     }
 
     public void setStatusConnection(boolean isConnected) {
         this.isConnected = isConnected;
-        serverUnavailable.setVisible(!isConnected);
+        statusLabel.setText(SERVER_ANAVAILABLE);
+        statusLabel.setVisible(!isConnected);
         connectButton.setDisable(!isConnected);
         tokenTextfield.setDisable(!isConnected);
+        password.setDisable(!isConnected);
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
