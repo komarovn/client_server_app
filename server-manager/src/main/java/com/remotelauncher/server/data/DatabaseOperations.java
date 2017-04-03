@@ -52,6 +52,16 @@ public class DatabaseOperations {
         }
     }
 
+    public void createNewUser(String name, String password) {
+        String query = "INSERT INTO remotelauncher.users (`name`, `password`) VALUES(?, ?)";
+        executeStatement(query, name, password);
+    }
+
+    public void insertNewTask(Object task, String userId) {
+        String query = "INSERT INTO remotelauncher.tasks (`task`, `is_completed`, `user_id`) VALUES(?, 0, ?)";
+        executeStatement(query, task, userId);
+    }
+
     public void closeConnection() {
         try {
             connection.close();
