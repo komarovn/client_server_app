@@ -6,8 +6,6 @@
  */
 package com.remotelauncher.server.data;
 
-import com.remotelauncher.server.threads.ServerThread;
-
 import java.sql.*;
 
 /**

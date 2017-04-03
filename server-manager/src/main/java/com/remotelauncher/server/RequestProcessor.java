@@ -12,13 +12,7 @@ import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.rmi.server.ExportException;
 import java.sql.Blob;
-import java.sql.PreparedStatement;
 
 public class RequestProcessor {
 
