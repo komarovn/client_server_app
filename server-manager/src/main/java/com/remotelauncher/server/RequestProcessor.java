@@ -7,7 +7,6 @@
 package com.remotelauncher.server;
 
 import com.remotelauncher.server.threads.ServerThread;
-import com.remotelauncher.server.threads.communication.ResponseThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
@@ -17,12 +16,16 @@ import org.slf4j.LoggerFactory;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 
+/**
+ * One client has his own Request Processor
+ */
 public class RequestProcessor {
     private Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
+    private String userId;
+
     private void receiveToken(Request request, Response response) {
         try {
-            String userId;
             String token = (String) request.getParameter("token");
             String password = (String) request.getParameter("password");
             if (ServerThread.getDatabaseOperations().isUserExists(token)) {
@@ -82,7 +85,7 @@ public class RequestProcessor {
         byte[] data = (byte[]) request.getParameter("taskFile");
         try {
             Blob blob = new SerialBlob(data);
-            ServerThread.getDatabaseOperations().insertNewTask(blob, null);
+            ServerThread.getDatabaseOperations().insertNewTask(blob, userId);
         } catch (Exception e) {
             e.printStackTrace();
         }
