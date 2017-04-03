@@ -72,10 +72,8 @@ public class RequestProcessor {
         byte[] data = (byte[]) request.getParameter("taskFile");
         try {
             Blob blob = new SerialBlob(data);
-            String query = "INSERT INTO remotelauncher.tasks VALUES(20001, ?, 0, null, 10001)";
-            PreparedStatement statement = ServerThread.getConnection().prepareStatement(query);
-            statement.setBlob(1, blob);
-            statement.executeUpdate();
+            String query = "INSERT INTO remotelauncher.tasks VALUES(20002, ?, 0, null, 10001)";
+            ServerThread.getDatabaseOperations().executeStatement(query, blob);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,6 +7,7 @@
 package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
+import com.remotelauncher.server.data.DatabaseOperations;
 import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.server.threads.communication.ResponseThread;
 import org.slf4j.Logger;
@@ -29,22 +30,12 @@ public class ServerThread extends Thread {
     private ServerSocket serverSocket = null;
     private List<Thread> communicationThreads = new ArrayList<>();
     private SchedulerThread schedulerThread;
-    private static Connection connection;
-
-    static {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/remotelauncher?useSSL=false",
-                    "root",
-                    "root");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private static DatabaseOperations databaseOperations;
 
     @Override
     public void run() {
         init();
+        databaseOperations = new DatabaseOperations();
         listenToClients(serverSocket);
     }
 
@@ -94,33 +85,15 @@ public class ServerThread extends Thread {
         try {
             serverSocket.close();
             LOGGER.debug("Server thread is stopped.");
-            closeConnection();
+            databaseOperations.closeConnection();
             stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static Connection getConnection() {
-        return connection;
+    public static DatabaseOperations getDatabaseOperations() {
+        return databaseOperations;
     }
 
-    public static ResultSet execute(String query) {
-        ResultSet result = null;
-        try {
-            Statement statement = connection.createStatement();
-            result = statement.executeQuery(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private void closeConnection() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
