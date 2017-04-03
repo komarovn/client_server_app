@@ -71,6 +71,20 @@ public class DatabaseOperations {
         executeStatement(query, name, password);
     }
 
+    public String getUserIdByName(String name) {
+        String userId = null;
+        try {
+            String query = "SELECT `user_id` FROM remotelauncher.users WHERE `name` = '" + name + "'";
+            ResultSet result = executeSingleQuery(query);
+            if (result.next()) {
+                userId = String.valueOf(result.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+
     public boolean checkPasswordForUser(String name, String password) {
         try {
             String query = "SELECT `password` FROM remotelauncher.users WHERE `name` = '" + name + "'";

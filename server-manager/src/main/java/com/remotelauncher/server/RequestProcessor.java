@@ -7,22 +7,29 @@
 package com.remotelauncher.server;
 
 import com.remotelauncher.server.threads.ServerThread;
+import com.remotelauncher.server.threads.communication.ResponseThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 
 public class RequestProcessor {
+    private Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
     private void receiveToken(Request request, Response response) {
         try {
+            String userId;
             String token = (String) request.getParameter("token");
             String password = (String) request.getParameter("password");
             if (ServerThread.getDatabaseOperations().isUserExists(token)) {
                 if (ServerThread.getDatabaseOperations().checkPasswordForUser(token, password)) {
                     response.setParameter("message", "accept");
+                    userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
+                    LOGGER.info("User {} has been connected", userId);
                     //TODO: do smth with user id
                 }
                 else {
@@ -31,6 +38,8 @@ public class RequestProcessor {
             }
             else {
                 ServerThread.getDatabaseOperations().createNewUser(token, password);
+                userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
+                LOGGER.info("Create new user with id {}", userId);
                 response.setParameter("message", "accept-new-user");
             }
         } catch (Exception e) {
