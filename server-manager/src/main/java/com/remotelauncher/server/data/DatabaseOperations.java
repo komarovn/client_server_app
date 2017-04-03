@@ -50,7 +50,6 @@ public class DatabaseOperations {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public void closeConnection() {
