@@ -10,31 +10,44 @@ import com.remotelauncher.server.threads.ServerThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.rmi.server.ExportException;
 import java.sql.Blob;
-import java.sql.PreparedStatement;
 
+/**
+ * One client has his own Request Processor
+ */
 public class RequestProcessor {
+    private Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
-    private void receiveToken(Request token, Response response) {
+    private String userId;
+
+    private void receiveToken(Request request, Response response) {
         try {
-            String tok = (String) token.getParameter("token");
-            //TODO: put user's token to DB.
+            String token = (String) request.getParameter("token");
+            String password = (String) request.getParameter("password");
+            if (ServerThread.getDatabaseOperations().isUserExists(token)) {
+                if (ServerThread.getDatabaseOperations().checkPasswordForUser(token, password)) {
+                    response.setParameter("message", "accept");
+                    userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
+                    LOGGER.info("User {} has been connected", userId);
+                    //TODO: do smth with user id
+                }
+                else {
+                    response.setParameter("message", "incorrect-password");
+                }
+            }
+            else {
+                ServerThread.getDatabaseOperations().createNewUser(token, password);
+                userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
+                LOGGER.info("Create new user with id {}", userId);
+                response.setParameter("message", "accept-new-user");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.setParameter("message", "Welcome!");
-    }
-
-    private String receiveUserId(String token) {
-        String userId = Integer.toString(token.hashCode());
-        return userId;
     }
 
     public void process(Request request, Response response) {
@@ -72,10 +85,7 @@ public class RequestProcessor {
         byte[] data = (byte[]) request.getParameter("taskFile");
         try {
             Blob blob = new SerialBlob(data);
-            String query = "INSERT INTO remotelauncher.tasks VALUES(20001, ?, 0, null, 10001)";
-            PreparedStatement statement = ServerThread.getConnection().prepareStatement(query);
-            statement.setBlob(1, blob);
-            statement.executeUpdate();
+            ServerThread.getDatabaseOperations().insertNewTask(blob, userId);
         } catch (Exception e) {
             e.printStackTrace();
         }
