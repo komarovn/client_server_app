@@ -37,9 +37,8 @@ public class SchedulerThread extends Thread {
                 e.printStackTrace();
             }
             synchronized (taskSessionsQueue) {
-                if (!taskSessionsQueue.isEmpty()) {
-                    //TODO: set on execution all available tasksessions after sleep
-                    if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
+                synchronized (workThreadCounter) {
+                    while (SchedulerThread.getWorkThreadCounter() < workThreadThreshold && !(taskSessionsQueue.isEmpty())) {
                         SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
                         WorkThread workThread = new WorkThread(SchedulerThread.getTaskSession());
                         workThread.start();
@@ -48,6 +47,7 @@ public class SchedulerThread extends Thread {
             }
         }
     }
+
 
     public static void addTaskSession(TaskSession taskSession) {
         synchronized (SchedulerThread.taskSessionsQueue) {
