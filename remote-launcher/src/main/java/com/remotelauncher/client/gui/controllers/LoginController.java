@@ -12,7 +12,6 @@ import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import com.remotelauncher.client.gui.RemoteLauncher;
-import com.sun.xml.internal.bind.marshaller.MinimumEscapeHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

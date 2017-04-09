@@ -10,4 +10,5 @@ public abstract class ServerConstants {
 
     public static final int PORT_NUMBER = 59342;
     public static final int WORK_THREAD_THRESHOLD = 2;
+    public static final String PATH_TO_TASKS = "C:\\temp\\";
 }

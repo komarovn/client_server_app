@@ -27,7 +27,7 @@ public class SchedulerThread extends Thread {
     public void run() {
         while (true) {
             try {
-                sleep(60000);
+                sleep(600);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

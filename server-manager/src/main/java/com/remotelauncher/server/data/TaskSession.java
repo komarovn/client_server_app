@@ -6,31 +6,47 @@
  */
 package com.remotelauncher.server.data;
 
-
 public class TaskSession {
 
-    private String author;
-    private String task;
+    private String taskId;
+    private String userId;
+    private String outputId;
+    private byte[] task;
+    private boolean isDone;
 
-    public TaskSession(String task, String author) {
-        this.author = author;
+    public TaskSession(String taskId, String userId, byte[] task) {
+        this.taskId = taskId;
+        this.userId = userId;
         this.task = task;
+        this.isDone = false;
     }
 
-    public String getTask() {
+    public byte[] getTask() {
         return task;
     }
 
-    public void setTask(String task) {
-        this.task = task;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public String getAuthor() {
-        return author;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
 }

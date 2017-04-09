@@ -1,0 +1,1 @@
+echo "ZDAROVA PSbI"

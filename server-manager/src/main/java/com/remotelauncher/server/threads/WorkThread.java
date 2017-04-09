@@ -6,45 +6,83 @@
  */
 package com.remotelauncher.server.threads;
 
+import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorkThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
 
     private TaskSession taskSession;
+    private List<String> filesToExecute;
+    private List<String> outputFiles;
 
     public WorkThread(TaskSession taskSession) {
+        filesToExecute = new ArrayList<>();
+        outputFiles = new ArrayList<>();
         this.taskSession = taskSession;
     }
 
     @Override
     public void run() {
-        //TODO: Execute task session
         LOGGER.info("WORKTHREAD {} IS STARTED! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         execute();
         SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
     }
 
-    private void execute() {
-        Process execution = null;
-        Runtime runtime = Runtime.getRuntime();
+    private String saveTaskToFile() {
+        String filename = ServerConstants.PATH_TO_TASKS + "task_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".bat";
         try {
-            execution = runtime.exec(taskSession.getTask());
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filename));
+            try {
+                bufferedOutputStream.write(taskSession.getTask());
+                bufferedOutputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return filename;
+    }
+
+    private byte[] readOutputFile(String fileName) {
+        byte[] data = new byte[(int) fileName.length()];
+        try {
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
+            inputStream.read(data, 0, data.length);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LOGGER.info("{}'s TASK COMPLETED", taskSession.getAuthor());
-        if (execution.getOutputStream() != null) {
-            LOGGER.info("THAT'S STDPUT: {}", execution.getOutputStream());
+        return data;
+    }
+
+    private void execute() {
+        Process execution = null;
+        Runtime runtime = Runtime.getRuntime();
+        String executeFile = this.saveTaskToFile();
+        String outputFile = "task_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".output";
+        outputFiles.add(outputFile);
+        filesToExecute.add(executeFile);
+        try {
+            execution = runtime.exec("cmd /c cd " + ServerConstants.PATH_TO_TASKS + " & cmd /c call " + executeFile + " > " + outputFile);
+            execution.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (execution.getErrorStream() != null) {
-            LOGGER.info("THAT'S STDERR: {}", execution.getErrorStream());
-        }
+        LOGGER.info("TASK {} COMPLETED", taskSession.getTaskId());
+        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(ServerConstants.PATH_TO_TASKS + outputFile));
+        File file = new File(ServerConstants.PATH_TO_TASKS + outputFile);
+        file.delete();
+        file = new File(executeFile);
+        file.delete();
+        //TODO: delete correctly
     }
 
 }
