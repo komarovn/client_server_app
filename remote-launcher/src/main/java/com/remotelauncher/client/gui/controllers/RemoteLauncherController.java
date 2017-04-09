@@ -75,8 +75,7 @@ public class RemoteLauncherController implements Initializable, ResponseListener
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (filePath.getText().equals(CHOOSE_A_FILE)) {
                     createTask.setDisable(true);
-                }
-                else {
+                } else {
                     createTask.setDisable(false);
                 }
             }
@@ -97,7 +96,7 @@ public class RemoteLauncherController implements Initializable, ResponseListener
 
     @Override
     public void receiveResponse(Response response) {
-
+        //TODO: add ResponseProcessor class with parsing message type
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
@@ -123,7 +122,7 @@ public class RemoteLauncherController implements Initializable, ResponseListener
         try {
             Request request = new Request();
             File file = new File(filePath.getText());
-            byte [] data  = new byte [(int) file.length()];
+            byte[] data = new byte[(int) file.length()];
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
             inputStream.read(data, 0, data.length);
             //TODO: Type of message

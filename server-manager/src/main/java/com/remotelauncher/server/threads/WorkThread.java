@@ -8,11 +8,16 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.threads.communication.ResponseThread;
+import com.remotelauncher.shared.MessageType;
+import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class WorkThread extends Thread {
@@ -34,6 +39,7 @@ public class WorkThread extends Thread {
         LOGGER.info("WORKTHREAD {} IS STARTED! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         execute();
         SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
+        //TODO: send update of queue to all
     }
 
     private String saveTaskToFile() {
@@ -83,6 +89,22 @@ public class WorkThread extends Thread {
         file = new File(executeFile);
         file.delete();
         //TODO: delete correctly
+        sendUpdateOfTaskSessionQueue("TASK COMPLETE QUEUE UPDATE\n");
+    }
+
+    public static void sendUpdateOfTaskSessionQueue(String message) {
+        List<Thread> communicationThreads = ServerThread.getCommunicationThreads();
+        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
+
+        Response response = new Response();
+        response.setParameter("type", MessageType.QUEUEUPDATE);
+        response.setParameter("queue_update", queueUpdate);
+        response.setParameter("message", message);
+        for (Thread thread : communicationThreads) {
+            if (thread instanceof ResponseThread) {
+                ((ResponseThread) thread).sendResponse(response);
+            }
+        }
     }
 
 }

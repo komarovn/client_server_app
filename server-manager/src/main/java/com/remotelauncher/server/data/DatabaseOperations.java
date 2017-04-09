@@ -8,6 +8,9 @@ package com.remotelauncher.server.data;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -131,6 +134,24 @@ public class DatabaseOperations {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<HashMap<String, Object>> getQueueUpdateOfUndoneTaskSessions() {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String query = "SELECT * FROM remotelauncher.tasks WHERE is_completed=0";
+        ResultSet resultSet =  executeSingleQuery(query);
+        try {
+            while(resultSet.next()){
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("task_id", resultSet.getInt(1));
+                hashMap.put("user_id", resultSet.getInt(5));
+                //TODO:: hashmap.put("name", ...);
+                result.add(hashMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public Connection getConnection() {
