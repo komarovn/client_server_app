@@ -129,6 +129,8 @@ public class RemoteLauncherController implements Initializable, ResponseListener
             request.setParameter("type", MessageType.TASKSESSION);
             request.setParameter("taskFile", data);
             request.setParameter("taskFileSize", data.length);
+            request.setParameter("taskName", "abc");
+            request.setParameter("taskFormatType", file.getName().substring(file.getName().indexOf(".")));
             requestListener.sendRequest(request);
         } catch (Exception e) {
             e.printStackTrace();

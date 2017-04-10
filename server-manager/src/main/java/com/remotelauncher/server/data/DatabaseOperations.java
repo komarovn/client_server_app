@@ -103,12 +103,13 @@ public class DatabaseOperations {
         return false;
     }
 
-    public String insertNewTask(byte[] task, String userId) {
+    public String insertNewTask(byte[] task, String name, String userId, String format) {
         String taskId = String.valueOf(Math.abs(UUID.randomUUID().hashCode()));
         try {
-            Blob blob = new SerialBlob(task);
-            String query = "INSERT INTO remotelauncher.tasks (`task_id`, `task`, `is_completed`, `user_id`) VALUES(?, ?, 0, ?)";
-            executeStatement(query, taskId, task, userId);
+            Blob taskBlob = new SerialBlob(task);
+            String query = "INSERT INTO remotelauncher.tasks (`task_id`, `name`, `task`, `is_completed`, `user_id`, " +
+                    "`format_type`) VALUES(?, ?, ?, 0, ?, ?)";
+            executeStatement(query, taskId, name, taskBlob, userId, format);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -144,8 +145,8 @@ public class DatabaseOperations {
             while(resultSet.next()){
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("task_id", resultSet.getInt(1));
-                hashMap.put("user_id", resultSet.getInt(5));
-                //TODO:: hashmap.put("name", ...);
+                hashMap.put("taskName", resultSet.getString(2));
+                hashMap.put("user_id", resultSet.getInt(6));
                 result.add(hashMap);
             }
         } catch (SQLException e) {

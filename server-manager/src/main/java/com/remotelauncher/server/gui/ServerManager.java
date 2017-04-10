@@ -40,7 +40,9 @@ public class ServerManager extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                tcpServer.stopServer();
+                if (tcpServer != null) {
+                    tcpServer.stopServer();
+                }
                 Platform.exit();
                 System.exit(0);
             }

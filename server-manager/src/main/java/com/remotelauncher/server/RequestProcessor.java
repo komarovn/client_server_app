@@ -83,8 +83,10 @@ public class RequestProcessor {
     private void receiveTaskSession(Request request, Response response) {
         int taskFileSize = (Integer) (request.getParameter("taskFileSize"));
         byte[] data = (byte[]) request.getParameter("taskFile");
+        String name = (String) request.getParameter("taskName");
+        String format = (String) request.getParameter("taskFormatType");
         try {
-            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, userId);
+            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, name, userId, format);
             TaskSession taskSession = new TaskSession(taskId, userId, data);
             SchedulerThread.addTaskSession(taskSession);
         } catch (Exception e) {

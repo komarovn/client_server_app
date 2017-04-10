@@ -28,10 +28,12 @@ ALTER TABLE remotelauncher.output AUTO_INCREMENT = 30001;
 CREATE TABLE remotelauncher.tasks
 (
     `task_id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50),
     `task` LONGBLOB,
     `is_completed` BOOL,
     `output_id` INT,
     `user_id` INT,
+    `format_type` VARCHAR(6),
     PRIMARY KEY (`task_id`),
     CONSTRAINT tasks_output_id_fk FOREIGN KEY (`output_id`) REFERENCES output (`output_id`),
     CONSTRAINT tasks_users_user_id_fk FOREIGN KEY (`user_id`) REFERENCES users (`user_id`)

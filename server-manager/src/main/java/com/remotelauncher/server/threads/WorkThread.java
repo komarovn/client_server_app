@@ -70,21 +70,21 @@ public class WorkThread extends Thread {
     }
 
     private void execute() {
-        Process execution = null;
+        Process execution;
         Runtime runtime = Runtime.getRuntime();
-        String executeFile = this.saveTaskToFile();
-        String outputFile = "task_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".output";
+        String executeFile = saveTaskToFile();
+        String outputFile = ServerConstants.PATH_TO_TASKS + "output_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".txt";
         outputFiles.add(outputFile);
         filesToExecute.add(executeFile);
         try {
-            execution = runtime.exec("cmd /c cd " + ServerConstants.PATH_TO_TASKS + " & cmd /c call " + executeFile + " > " + outputFile);
+            execution = runtime.exec("cmd /C call " + executeFile + " > " + outputFile, null, new File(ServerConstants.PATH_TO_TASKS));
             execution.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
         LOGGER.info("TASK {} COMPLETED", taskSession.getTaskId());
-        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(ServerConstants.PATH_TO_TASKS + outputFile));
-        File file = new File(ServerConstants.PATH_TO_TASKS + outputFile);
+        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(outputFile));
+        File file = new File(outputFile);
         file.delete();
         file = new File(executeFile);
         file.delete();
