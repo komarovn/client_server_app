@@ -33,7 +33,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class RemoteLauncherController implements Initializable, ResponseListener {
+public class RemoteLauncherController implements Initializable {
     private final String CHOOSE_A_FILE = "Choose a File...";
 
     private RemoteLauncher mainApp;
@@ -86,17 +86,8 @@ public class RemoteLauncherController implements Initializable, ResponseListener
             public void handle(ActionEvent event) {
                 sendFile();
                 filePath.setText(CHOOSE_A_FILE);
-
-                //TODO: delete next 2 rows after implementing task queue on server. New task will be added from response
-                taskQueueItems.add(filePath.getText());
-                taskQueue.setItems(taskQueueItems);
             }
         });
-    }
-
-    @Override
-    public void receiveResponse(Response response) {
-        //TODO: add ResponseProcessor class with parsing message type
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
@@ -125,7 +116,6 @@ public class RemoteLauncherController implements Initializable, ResponseListener
             byte[] data = new byte[(int) file.length()];
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
             inputStream.read(data, 0, data.length);
-            //TODO: Type of message
             request.setParameter("type", MessageType.TASKSESSION);
             request.setParameter("taskFile", data);
             request.setParameter("taskFileSize", data.length);

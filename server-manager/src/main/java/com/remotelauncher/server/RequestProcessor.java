@@ -56,11 +56,14 @@ public class RequestProcessor {
             switch (type) {
                 case LOGIN:
                     receiveToken(request, response);
+                    response.setParameter("type", MessageType.LOGIN);
                     break;
                 case TASKSESSION:
                     receiveTaskSession(request, response);
+                    response.setParameter("type", MessageType.TASKSESSION);
                     break;
                 case ADMINISTRATIVE:
+                    response.setParameter("type", MessageType.ADMINISTRATIVE);
                     break;
                 default:
                     unrecognizedMessageType(response);

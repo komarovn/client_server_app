@@ -22,7 +22,7 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ResponseListener {
+public class LoginController implements Initializable {
     private final String PASSWORD_INCORRECT = "Password is incorrect!";
     private final String SERVER_ANAVAILABLE = "Server is anavailable now";
     private final String FILL_FIELDS = "Please, fill your name and password";
@@ -82,25 +82,6 @@ public class LoginController implements Initializable, ResponseListener {
         });
     }
 
-    @Override
-    public void receiveResponse(Response response) {
-        this.response = response;
-        if (response != null) {
-            String message = (String) response.getParameter("message");
-            if (message != null) {
-                System.out.printf((String) response.getParameter("message"));
-                if (message.equals("incorrect-password")) {
-                    statusLabel.setText(PASSWORD_INCORRECT);
-                    statusLabel.setVisible(true);
-                }
-                else {
-                    statusLabel.setVisible(false);
-                    mainApp.openMainFrame();
-                }
-            }
-        }
-    }
-
     public void setStatusConnection(boolean isConnected) {
         this.isConnected = isConnected;
         statusLabel.setText(SERVER_ANAVAILABLE);
@@ -116,6 +97,16 @@ public class LoginController implements Initializable, ResponseListener {
 
     public void addRequestListener(RequestListener listener) {
         requestListener = listener;
+    }
+
+    public void setPasswordIncorrect() {
+        statusLabel.setText(PASSWORD_INCORRECT);
+        statusLabel.setVisible(true);
+    }
+
+    public void openMainFrame() {
+        statusLabel.setVisible(false);
+        mainApp.openMainFrame();
     }
 
 }

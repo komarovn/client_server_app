@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.client.PresenterManager;
 import com.remotelauncher.client.threads.communication.RequestThread;
 import com.remotelauncher.client.threads.communication.ResponseThread;
 import com.remotelauncher.StringResourses;
@@ -49,6 +50,30 @@ public class RemoteLauncher extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
+        URL address = getClass().getResource("/fxml/LoginFormGUI.fxml");
+        FXMLLoader loader = new FXMLLoader(address);
+        Parent root = loader.load();
+        primaryStage.setTitle(StringResourses.REMOTE_LAUNCHER);
+        primaryStage.setScene(new Scene(root));
+
+        initializeLoginController(loader);
+
+        primaryStage.show();
+    }
+
+    private void initializeLoginController(FXMLLoader loader) {
+        LoginController controller = loader.getController();
+        controller.setMainApp(this);
+
+        PresenterManager<LoginController> presenterManager = new PresenterManager<>();
+        presenterManager.setController(controller);
+        controller.addRequestListener(requestThread);
+        if (responseThread != null) {
+            responseThread.addResponseListener(presenterManager);
+        }
+
+        controller.setStatusConnection(isConnected);
+
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -63,22 +88,6 @@ public class RemoteLauncher extends Application {
                 System.exit(0);
             }
         });
-        URL address = getClass().getResource("/fxml/LoginFormGUI.fxml");
-        FXMLLoader loader = new FXMLLoader(address);
-        Parent root = loader.load();
-        primaryStage.setTitle(StringResourses.REMOTE_LAUNCHER);
-        primaryStage.setScene(new Scene(root));
-        LoginController controller = loader.getController();
-        controller.setMainApp(this);
-
-        controller.addRequestListener(requestThread);
-        if (responseThread != null) {
-            responseThread.addResponseListener(controller);
-        }
-
-        controller.setStatusConnection(isConnected);
-
-        primaryStage.show();
     }
 
     public void openMainFrame() {
@@ -86,11 +95,13 @@ public class RemoteLauncher extends Application {
             URL address = getClass().getResource("/fxml/RemoteLauncherGUI.fxml");
             FXMLLoader loader = new FXMLLoader(address);
             Parent root = loader.load();
-            RemoteLauncherController controller =loader.getController();
+            RemoteLauncherController controller = loader.getController();
             controller.setMainApp(this);
 
+            PresenterManager<RemoteLauncherController> presenterManager = new PresenterManager<>();
+            presenterManager.setController(controller);
             controller.addRequestListener(requestThread);
-            responseThread.addResponseListener(controller);
+            responseThread.addResponseListener(presenterManager);
 
             stage.getScene().setRoot(root);
             stage.sizeToScene();

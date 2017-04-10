@@ -7,5 +7,9 @@
 package com.remotelauncher.shared;
 
 public enum MessageType {
-    TASKSESSION, LOGIN, ADMINISTRATIVE,QUEUEUPDATE
+    TASKSESSION,
+    LOGIN,
+    ADMINISTRATIVE,
+    QUEUEUPDATE,
+    DLRESULT
 }
