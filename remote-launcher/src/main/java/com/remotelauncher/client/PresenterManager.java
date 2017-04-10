@@ -12,8 +12,12 @@ import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Response;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class PresenterManager<Controller> implements ResponseListener {
-    Controller controller;
+    private Controller controller;
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -46,23 +50,28 @@ public class PresenterManager<Controller> implements ResponseListener {
     }
 
     private void processLoginResponse(Response response) {
-        if (response != null) {
+        if (response.getParameter("message") != null) {
             String message = (String) response.getParameter("message");
-            if (message != null) {
-                System.out.printf((String) response.getParameter("message"));
-                if (message.equals("incorrect-password")) {
-                    ((LoginController) controller).setPasswordIncorrect();
-                }
-                else {
-                    ((LoginController) controller).openMainFrame();
-                }
+            if (message.equals("incorrect-password")) {
+                ((LoginController) controller).setPasswordIncorrect();
             }
+            else {
+                ((LoginController) controller).openMainFrame();
+            }
+            System.out.printf(message);
         }
     }
 
     private void processQueueUpdateResponse(Response response) {
-
+        List<HashMap<String, Object>> queue = (List<HashMap<String, Object>>) response.getParameter("queue");
+        List<String> tasks = new ArrayList<>();
+        for (HashMap<String, Object> task : queue) {
+            String taskName = (String) task.get("taskName");
+            Integer taskId = (Integer) task.get("taskId");
+            Integer userId = (Integer) task.get("userId");
+            tasks.add(taskName);
+        }
+        ((RemoteLauncherController) controller).setTaskQueue(tasks);
     }
-
 
 }

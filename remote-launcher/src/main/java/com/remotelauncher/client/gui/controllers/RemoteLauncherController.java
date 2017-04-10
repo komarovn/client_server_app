@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.client.ControllerHelper;
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class RemoteLauncherController implements Initializable {
@@ -45,6 +47,9 @@ public class RemoteLauncherController implements Initializable {
 
     @FXML
     private TextField filePath;
+
+    @FXML
+    private TextField taskName;
 
     @FXML
     private Button createTask;
@@ -73,7 +78,7 @@ public class RemoteLauncherController implements Initializable {
         filePath.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (filePath.getText().equals(CHOOSE_A_FILE)) {
+                if (filePath.getText().equals(CHOOSE_A_FILE) && taskName.getText().isEmpty()) {
                     createTask.setDisable(true);
                 } else {
                     createTask.setDisable(false);
@@ -110,21 +115,21 @@ public class RemoteLauncherController implements Initializable {
     }
 
     private void sendFile() {
-        try {
-            Request request = new Request();
-            File file = new File(filePath.getText());
-            byte[] data = new byte[(int) file.length()];
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-            inputStream.read(data, 0, data.length);
-            request.setParameter("type", MessageType.TASKSESSION);
-            request.setParameter("taskFile", data);
-            request.setParameter("taskFileSize", data.length);
-            request.setParameter("taskName", "abc");
-            request.setParameter("taskFormatType", file.getName().substring(file.getName().indexOf(".")));
-            requestListener.sendRequest(request);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Request request = new Request();
+        File file = new File(filePath.getText());
+        byte[] data = ControllerHelper.getDataFromFile(file);
+        request.setParameter("type", MessageType.TASKSESSION);
+        request.setParameter("taskFile", data);
+        request.setParameter("taskFileSize", data.length);
+        request.setParameter("taskName", taskName.getText());
+        request.setParameter("taskFormatType", file.getName().substring(file.getName().indexOf(".")));
+        requestListener.sendRequest(request);
+    }
+
+    public void setTaskQueue(List tasks) {
+        taskQueueItems.clear();
+        taskQueueItems.addAll(tasks);
+        taskQueue.setItems(taskQueueItems);
     }
 
 }

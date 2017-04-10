@@ -144,9 +144,9 @@ public class DatabaseOperations {
         try {
             while(resultSet.next()){
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("task_id", resultSet.getInt(1));
+                hashMap.put("taskId", resultSet.getInt(1));
                 hashMap.put("taskName", resultSet.getString(2));
-                hashMap.put("user_id", resultSet.getInt(6));
+                hashMap.put("userId", resultSet.getInt(6));
                 result.add(hashMap);
             }
         } catch (SQLException e) {

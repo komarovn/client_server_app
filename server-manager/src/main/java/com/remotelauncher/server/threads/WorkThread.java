@@ -98,7 +98,7 @@ public class WorkThread extends Thread {
 
         Response response = new Response();
         response.setParameter("type", MessageType.QUEUEUPDATE);
-        response.setParameter("queue_update", queueUpdate);
+        response.setParameter("queue", queueUpdate);
         response.setParameter("message", message);
         for (Thread thread : communicationThreads) {
             if (thread instanceof ResponseThread) {
