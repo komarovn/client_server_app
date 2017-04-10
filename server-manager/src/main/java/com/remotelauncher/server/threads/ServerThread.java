@@ -27,7 +27,7 @@ public class ServerThread extends Thread {
     private Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
 
     private ServerSocket serverSocket = null;
-    private List<Thread> communicationThreads = new ArrayList<>();
+    private static List<Thread> communicationThreads = new ArrayList<>();
     private SchedulerThread schedulerThread;
     private static DatabaseOperations databaseOperations;
 
@@ -89,6 +89,10 @@ public class ServerThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<Thread> getCommunicationThreads() {
+        return communicationThreads;
     }
 
     public static DatabaseOperations getDatabaseOperations() {

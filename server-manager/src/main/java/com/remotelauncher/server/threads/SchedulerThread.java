@@ -8,8 +8,13 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.threads.communication.ResponseThread;
+import com.remotelauncher.shared.MessageType;
+import com.remotelauncher.shared.Response;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class SchedulerThread extends Thread {
@@ -27,13 +32,13 @@ public class SchedulerThread extends Thread {
     public void run() {
         while (true) {
             try {
-                sleep(60000);
+                sleep(30000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             synchronized (taskSessionsQueue) {
-                if (!taskSessionsQueue.isEmpty()) {
-                    if (SchedulerThread.getWorkThreadCounter() < workThreadThreshold) {
+                synchronized (workThreadCounter) {
+                    while (SchedulerThread.getWorkThreadCounter() < workThreadThreshold && !(taskSessionsQueue.isEmpty())) {
                         SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() + 1);
                         WorkThread workThread = new WorkThread(SchedulerThread.getTaskSession());
                         workThread.start();
@@ -43,10 +48,12 @@ public class SchedulerThread extends Thread {
         }
     }
 
+
     public static void addTaskSession(TaskSession taskSession) {
         synchronized (SchedulerThread.taskSessionsQueue) {
             taskSessionsQueue.add(taskSession);
         }
+        WorkThread.sendUpdateOfTaskSessionQueue("TASK INSERT QUEUE UPDATE\n");
     }
 
     public static TaskSession getTaskSession() {
@@ -65,7 +72,7 @@ public class SchedulerThread extends Thread {
         }
     }
 
-    private void saveTaskQueue(){
+    private void saveTaskQueue() {
         //Save current taskQueue to DB
     }
 

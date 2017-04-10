@@ -6,7 +6,12 @@
  */
 package com.remotelauncher.server.data;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * API for execution of database operations.
@@ -40,7 +45,7 @@ public class DatabaseOperations {
         return result;
     }
 
-    public void executeStatement(String query, Object ... param) {
+    public void executeStatement(String query, Object... param) {
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             for (int i = 0; i < param.length; i++) {
@@ -98,9 +103,16 @@ public class DatabaseOperations {
         return false;
     }
 
-    public void insertNewTask(Object task, String userId) {
-        String query = "INSERT INTO remotelauncher.tasks (`task`, `is_completed`, `user_id`) VALUES(?, 0, ?)";
-        executeStatement(query, task, userId);
+    public String insertNewTask(byte[] task, String userId) {
+        String taskId = String.valueOf(Math.abs(UUID.randomUUID().hashCode()));
+        try {
+            Blob blob = new SerialBlob(task);
+            String query = "INSERT INTO remotelauncher.tasks (`task_id`, `task`, `is_completed`, `user_id`) VALUES(?, ?, 0, ?)";
+            executeStatement(query, taskId, task, userId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return taskId;
     }
 
     public void closeConnection() {
@@ -109,6 +121,37 @@ public class DatabaseOperations {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setTaskIsCompleted(String taskId, byte[] output) {
+        String outputId = String.valueOf(Math.abs(UUID.randomUUID().hashCode()));
+        String query = "INSERT INTO remotelauncher.output (`output_id`, `file`) VALUES(?, ?)";
+        try {
+            Blob blob = new SerialBlob(output);
+            executeStatement(query, outputId, blob);
+            query = "UPDATE remotelauncher.tasks SET is_completed=1,output_id=? WHERE task_id=?";
+            executeStatement(query, outputId, taskId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<HashMap<String, Object>> getQueueUpdateOfUndoneTaskSessions() {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String query = "SELECT * FROM remotelauncher.tasks WHERE is_completed=0";
+        ResultSet resultSet =  executeSingleQuery(query);
+        try {
+            while(resultSet.next()){
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("task_id", resultSet.getInt(1));
+                hashMap.put("user_id", resultSet.getInt(5));
+                //TODO:: hashmap.put("name", ...);
+                result.add(hashMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public Connection getConnection() {

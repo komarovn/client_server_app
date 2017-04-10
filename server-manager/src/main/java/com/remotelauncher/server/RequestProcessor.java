@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.server;
 
+import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.threads.SchedulerThread;
 import com.remotelauncher.server.threads.ServerThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
@@ -33,13 +35,11 @@ public class RequestProcessor {
                     response.setParameter("message", "accept");
                     userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
                     LOGGER.info("User {} has been connected", userId);
-                    //TODO: do smth with user id
-                }
-                else {
+                    //TODO: send queue update
+                } else {
                     response.setParameter("message", "incorrect-password");
                 }
-            }
-            else {
+            } else {
                 ServerThread.getDatabaseOperations().createNewUser(token, password);
                 userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
                 LOGGER.info("Create new user with id {}", userId);
@@ -84,8 +84,9 @@ public class RequestProcessor {
         int taskFileSize = (Integer) (request.getParameter("taskFileSize"));
         byte[] data = (byte[]) request.getParameter("taskFile");
         try {
-            Blob blob = new SerialBlob(data);
-            ServerThread.getDatabaseOperations().insertNewTask(blob, userId);
+            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, userId);
+            TaskSession taskSession = new TaskSession(taskId, userId, data);
+            SchedulerThread.addTaskSession(taskSession);
         } catch (Exception e) {
             e.printStackTrace();
         }

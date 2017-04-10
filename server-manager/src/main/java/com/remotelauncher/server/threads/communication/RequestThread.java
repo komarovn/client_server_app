@@ -42,7 +42,6 @@ public class RequestThread extends Thread {
         while (!clientSocket.isClosed()) {
             final Request request = receiveRequest();
             if (request != null) {
-                //TODO: Parse requests
                 processRequest(request);
             } else {
                 try {
