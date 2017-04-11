@@ -11,6 +11,7 @@ public abstract class ServerConstants {
     public static final int PORT_NUMBER = 59342;
     public static final int WORK_THREAD_THRESHOLD = 5;
     public static final String PATH_TO_TASKS = "C:\\temp\\";
+    //public static final String PATH_TO_TASKS = System.getProperty("user.home") + "\\AppData\\Local\\ServerManager\\";
 
     public static final String TYPE = "type";
     public static final String CLIENT_STATE = "clientState";

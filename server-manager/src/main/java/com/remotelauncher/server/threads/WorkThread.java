@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +51,7 @@ public class WorkThread extends Thread {
             try {
                 bufferedOutputStream.write(taskSession.getTask());
                 bufferedOutputStream.flush();
+                bufferedOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,6 +66,7 @@ public class WorkThread extends Thread {
         try {
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
             inputStream.read(data, 0, data.length);
+            inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +82,7 @@ public class WorkThread extends Thread {
         filesToExecute.add(executeFile);
         try {
             try {
-                sleep(50000); // sleep for 50 sec - testing our tasks queue
+                sleep(10000); // sleep for 50 sec - testing our tasks queue
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -88,11 +93,13 @@ public class WorkThread extends Thread {
         }
         LOGGER.info("TASK {} COMPLETED", taskSession.getTaskId());
         ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(outputFile));
-        File file = new File(outputFile);
-        file.delete();
-        file = new File(executeFile);
-        file.delete();
-        //TODO: delete correctly
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        deleteFile(outputFile);
+        deleteFile(executeFile);
         sendUpdateOfTaskSessionQueue("TASK COMPLETE QUEUE UPDATE\n");
     }
 
@@ -108,6 +115,17 @@ public class WorkThread extends Thread {
             if (thread instanceof ResponseThread) {
                 ((ResponseThread) thread).sendResponse(response);
             }
+        }
+    }
+
+    private void deleteFile(String path) {
+        try {
+            Files.deleteIfExists(Paths.get(path));
+            LOGGER.trace("File {} has been deleted", path);
+        } catch (FileSystemException e) {
+            LOGGER.error("File has not been deleted: {}", e.getReason());
+        } catch (IOException e) {
+            LOGGER.error("File {} has not been deleted", path);
         }
     }
 
