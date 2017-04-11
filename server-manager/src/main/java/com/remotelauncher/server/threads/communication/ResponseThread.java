@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.server.threads.communication;
 
+import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.listeners.ResponseListener;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Response;
@@ -58,8 +59,8 @@ public class ResponseThread extends Thread implements ResponseListener {
 
     public void stopResponseThread() {
         Response response = new Response();
-        response.setParameter("type", MessageType.ADMINISTRATIVE);
-        response.setParameter("serverState", "STOPPED");
+        response.setParameter(ServerConstants.TYPE, MessageType.ADMINISTRATIVE);
+        response.setParameter(ServerConstants.SERVER_STATE, "STOPPED");
         if (!clientSocket.isClosed()) {
             sendResponse(response);
         }

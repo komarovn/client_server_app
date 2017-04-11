@@ -15,6 +15,7 @@ public abstract class ServerConstants {
 
     public static final String TYPE = "type";
     public static final String CLIENT_STATE = "clientState";
+    public static final String SERVER_STATE = "serverState";
     public static final String MESSAGE = "message";
 
     public static final String USER_NAME = "token";
