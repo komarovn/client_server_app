@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.server.data;
 
+import com.remotelauncher.ServerConstants;
+
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
 import java.util.ArrayList;
@@ -142,11 +144,11 @@ public class DatabaseOperations {
         String query = "SELECT * FROM remotelauncher.tasks WHERE is_completed=0";
         ResultSet resultSet =  executeSingleQuery(query);
         try {
-            while(resultSet.next()){
+            while(resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("taskId", resultSet.getInt(1));
-                hashMap.put("taskName", resultSet.getString(2));
-                hashMap.put("userId", resultSet.getInt(6));
+                hashMap.put(ServerConstants.TASK_ID, resultSet.getInt(1));
+                hashMap.put(ServerConstants.TASK_NAME, resultSet.getString(2));
+                hashMap.put(ServerConstants.TASK_USER_ID, resultSet.getInt(6));
                 result.add(hashMap);
             }
         } catch (SQLException e) {

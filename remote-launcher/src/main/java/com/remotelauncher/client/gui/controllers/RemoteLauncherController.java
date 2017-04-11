@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.ClientConstants;
 import com.remotelauncher.client.ControllerHelper;
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
@@ -22,10 +23,15 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -39,6 +45,7 @@ public class RemoteLauncherController implements Initializable {
     private final String CHOOSE_A_FILE = "Choose a File...";
 
     private RemoteLauncher mainApp;
+    private String userId;
     private RequestListener requestListener;
     private ObservableList taskQueueItems = FXCollections.observableArrayList();
 
@@ -55,7 +62,7 @@ public class RemoteLauncherController implements Initializable {
     private Button createTask;
 
     @FXML
-    private ListView taskQueue;
+    private ListView<CellView> taskQueue;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -78,11 +85,13 @@ public class RemoteLauncherController implements Initializable {
         filePath.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (filePath.getText().equals(CHOOSE_A_FILE) && taskName.getText().isEmpty()) {
-                    createTask.setDisable(true);
-                } else {
-                    createTask.setDisable(false);
-                }
+                validateCreateTask();
+            }
+        });
+        taskName.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                validateCreateTask();
             }
         });
         createTask.setDisable(true);
@@ -91,12 +100,17 @@ public class RemoteLauncherController implements Initializable {
             public void handle(ActionEvent event) {
                 sendFile();
                 filePath.setText(CHOOSE_A_FILE);
+                taskName.setText("");
             }
         });
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
         this.mainApp = mainApp;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void addRequestListener(RequestListener listener) {
@@ -114,22 +128,52 @@ public class RemoteLauncherController implements Initializable {
         }
     }
 
+    private void validateCreateTask() {
+        if (filePath.getText().equals(CHOOSE_A_FILE) || taskName.getText().isEmpty()) {
+            createTask.setDisable(true);
+        } else {
+            createTask.setDisable(false);
+        }
+    }
+
     private void sendFile() {
         Request request = new Request();
         File file = new File(filePath.getText());
         byte[] data = ControllerHelper.getDataFromFile(file);
-        request.setParameter("type", MessageType.TASKSESSION);
-        request.setParameter("taskFile", data);
-        request.setParameter("taskFileSize", data.length);
-        request.setParameter("taskName", taskName.getText());
-        request.setParameter("taskFormatType", file.getName().substring(file.getName().indexOf(".")));
+        request.setParameter(ClientConstants.TYPE, MessageType.TASKSESSION);
+        request.setParameter(ClientConstants.TASK_FILE, data);
+        request.setParameter(ClientConstants.TASK_FILE_SIZE, data.length);
+        request.setParameter(ClientConstants.TASK_NAME, taskName.getText());
+        request.setParameter(ClientConstants.TASK_FORMAT_TYPE, file.getName().substring(file.getName().indexOf(".")));
         requestListener.sendRequest(request);
     }
 
-    public void setTaskQueue(List tasks) {
+    public void setTaskQueue(List<CellView> tasks) {
         taskQueueItems.clear();
         taskQueueItems.addAll(tasks);
-        taskQueue.setItems(taskQueueItems);
+        taskQueue.setCellFactory(new Callback<ListView<CellView>, ListCell<CellView>>() {
+            @Override
+            public ListCell<CellView> call(ListView<CellView> param) {
+                return new ListCell<CellView>() {
+                    @Override
+                    protected void updateItem(CellView item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            Text taskName = new Text(item.getTaskName());
+                            if (!item.getUserId().toString().equals(userId)) {
+                                taskName.setFill(Color.GRAY);
+                            }
+                            else {
+                                taskName.setStyle("-fx-font-weight: bold");
+                            }
+                            HBox horizontalBox = new HBox(taskName);
+                            horizontalBox.setSpacing(10);
+                            setGraphic(horizontalBox);
+                        }
+                    }
+                };
+            }
+        });
     }
 
 }

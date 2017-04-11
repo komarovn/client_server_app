@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.client;
 
+import com.remotelauncher.ClientConstants;
+import com.remotelauncher.client.gui.controllers.CellView;
 import com.remotelauncher.client.gui.controllers.LoginController;
 import com.remotelauncher.client.gui.controllers.RemoteLauncherController;
 import com.remotelauncher.client.listeners.ResponseListener;
@@ -25,7 +27,7 @@ public class PresenterManager<Controller> implements ResponseListener {
 
     @Override
     public void receiveResponse(Response response) {
-        MessageType type = (MessageType) response.getParameter("type");
+        MessageType type = (MessageType) response.getParameter(ClientConstants.TYPE);
         if (type != null) {
             switch (type) {
                 case LOGIN:
@@ -50,26 +52,26 @@ public class PresenterManager<Controller> implements ResponseListener {
     }
 
     private void processLoginResponse(Response response) {
-        if (response.getParameter("message") != null) {
-            String message = (String) response.getParameter("message");
+        if (response.getParameter(ClientConstants.MESSAGE) != null) {
+            String message = (String) response.getParameter(ClientConstants.MESSAGE);
             if (message.equals("incorrect-password")) {
                 ((LoginController) controller).setPasswordIncorrect();
             }
             else {
-                ((LoginController) controller).openMainFrame();
+                ((LoginController) controller).openMainFrame((String) response.getParameter(ClientConstants.USER_ID));
             }
             System.out.printf(message);
         }
     }
 
     private void processQueueUpdateResponse(Response response) {
-        List<HashMap<String, Object>> queue = (List<HashMap<String, Object>>) response.getParameter("queue");
-        List<String> tasks = new ArrayList<>();
+        List<HashMap<String, Object>> queue = (List<HashMap<String, Object>>) response.getParameter(ClientConstants.QUEUE);
+        List<CellView> tasks = new ArrayList<>();
         for (HashMap<String, Object> task : queue) {
-            String taskName = (String) task.get("taskName");
-            Integer taskId = (Integer) task.get("taskId");
-            Integer userId = (Integer) task.get("userId");
-            tasks.add(taskName);
+            String taskName = (String) task.get(ClientConstants.TASK_NAME);
+            Integer taskId = (Integer) task.get(ClientConstants.TASK_ID);
+            Integer userId = (Integer) task.get(ClientConstants.TASK_USER_ID);
+            tasks.add(new CellView(taskName, taskId, userId));
         }
         ((RemoteLauncherController) controller).setTaskQueue(tasks);
     }

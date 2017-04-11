@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,9 +96,9 @@ public class WorkThread extends Thread {
         List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
 
         Response response = new Response();
-        response.setParameter("type", MessageType.QUEUEUPDATE);
-        response.setParameter("queue", queueUpdate);
-        response.setParameter("message", message);
+        response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
+        response.setParameter(ServerConstants.QUEUE, queueUpdate);
+        response.setParameter(ServerConstants.MESSAGE, message);
         for (Thread thread : communicationThreads) {
             if (thread instanceof ResponseThread) {
                 ((ResponseThread) thread).sendResponse(response);

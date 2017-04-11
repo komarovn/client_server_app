@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui;
 
+import com.remotelauncher.ClientConstants;
 import com.remotelauncher.client.PresenterManager;
 import com.remotelauncher.client.threads.communication.RequestThread;
 import com.remotelauncher.client.threads.communication.ResponseThread;
@@ -79,8 +80,8 @@ public class RemoteLauncher extends Application {
             public void handle(WindowEvent event) {
                 if (tcpClient.getClientSocket() != null && !tcpClient.getClientSocket().isClosed()) {
                     Request request = new Request();
-                    request.setParameter("type", MessageType.ADMINISTRATIVE);
-                    request.setParameter("state", "DISCONNECT");
+                    request.setParameter(ClientConstants.TYPE, MessageType.ADMINISTRATIVE);
+                    request.setParameter(ClientConstants.CLIENT_STATE, "DISCONNECT");
                     requestThread.sendRequest(request);
                 }
                 System.out.println("App is closed");
@@ -90,13 +91,14 @@ public class RemoteLauncher extends Application {
         });
     }
 
-    public void openMainFrame() {
+    public void openMainFrame(String userId) {
         try {
             URL address = getClass().getResource("/fxml/RemoteLauncherGUI.fxml");
             FXMLLoader loader = new FXMLLoader(address);
             Parent root = loader.load();
             RemoteLauncherController controller = loader.getController();
             controller.setMainApp(this);
+            controller.setUserId(userId);
 
             PresenterManager<RemoteLauncherController> presenterManager = new PresenterManager<>();
             presenterManager.setController(controller);

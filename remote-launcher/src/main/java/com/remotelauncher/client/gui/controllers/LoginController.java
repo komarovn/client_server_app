@@ -6,6 +6,7 @@
  */
 package com.remotelauncher.client.gui.controllers;
 
+import com.remotelauncher.ClientConstants;
 import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.shared.MessageType;
@@ -18,6 +19,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,21 +52,26 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tokenTextfield.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    connectAction();
+                }
+            }
+        });
+        password.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    connectAction();
+                }
+            }
+        });
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (!tokenTextfield.getText().isEmpty() && !password.getText().isEmpty()) {
-                    statusLabel.setVisible(false);
-                    Request request = new Request();
-                    request.setParameter("type", MessageType.LOGIN);
-                    request.setParameter("token", tokenTextfield.getText());
-                    request.setParameter("password", password.getText());
-                    requestListener.sendRequest(request);
-                }
-                else {
-                    statusLabel.setText(FILL_FIELDS);
-                    statusLabel.setVisible(true);
-                }
+                connectAction();
             }
         });
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -71,8 +79,8 @@ public class LoginController implements Initializable {
             public void handle(ActionEvent event) {
                 if (isConnected) {
                     Request request = new Request();
-                    request.setParameter("type", MessageType.ADMINISTRATIVE);
-                    request.setParameter("state", "DISCONNECT");
+                    request.setParameter(ClientConstants.TYPE, MessageType.ADMINISTRATIVE);
+                    request.setParameter(ClientConstants.CLIENT_STATE, "DISCONNECT");
                     requestListener.sendRequest(request);
                 }
                 System.out.println("App is closed");
@@ -104,9 +112,24 @@ public class LoginController implements Initializable {
         statusLabel.setVisible(true);
     }
 
-    public void openMainFrame() {
+    public void openMainFrame(String userId) {
         statusLabel.setVisible(false);
-        mainApp.openMainFrame();
+        mainApp.openMainFrame(userId);
+    }
+
+    private void connectAction() {
+        if (!tokenTextfield.getText().isEmpty() && !password.getText().isEmpty()) {
+            statusLabel.setVisible(false);
+            Request request = new Request();
+            request.setParameter(ClientConstants.TYPE, MessageType.LOGIN);
+            request.setParameter(ClientConstants.USER_NAME, tokenTextfield.getText());
+            request.setParameter(ClientConstants.PASSWORD, password.getText());
+            requestListener.sendRequest(request);
+        }
+        else {
+            statusLabel.setText(FILL_FIELDS);
+            statusLabel.setVisible(true);
+        }
     }
 
 }
