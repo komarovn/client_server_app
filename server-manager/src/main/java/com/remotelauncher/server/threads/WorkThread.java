@@ -76,6 +76,11 @@ public class WorkThread extends Thread {
         outputFiles.add(outputFile);
         filesToExecute.add(executeFile);
         try {
+            try {
+                sleep(50000); // sleep for 50 sec - testing our tasks queue
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             execution = runtime.exec("cmd /C call " + executeFile + " > " + outputFile, null, new File(ServerConstants.PATH_TO_TASKS));
             execution.waitFor();
         } catch (Exception e) {

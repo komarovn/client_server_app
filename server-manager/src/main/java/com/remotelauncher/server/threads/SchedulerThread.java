@@ -32,7 +32,7 @@ public class SchedulerThread extends Thread {
     public void run() {
         while (true) {
             try {
-                sleep(30000);
+                sleep(30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
