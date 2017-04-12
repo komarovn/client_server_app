@@ -180,7 +180,7 @@ public class DatabaseOperations {
             query += " WHERE user_id = ?";
             if (isCompleted) {
                 query += " and is_completed = ?";
-                resultSet = executeQueryWithParams(query, userId, !isCompleted);
+                resultSet = executeQueryWithParams(query, userId, isCompleted);
             }
             else {
                 resultSet = executeQueryWithParams(query, userId);
@@ -188,12 +188,12 @@ public class DatabaseOperations {
         }
         else if (isCompleted) {
             query += " WHERE is_completed = ?";
-            resultSet = executeQueryWithParams(query, !isCompleted);
+            resultSet = executeQueryWithParams(query, isCompleted);
         }
         else {
             resultSet = executeSingleQuery(query);
         }
-        
+
         try {
             while(resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
