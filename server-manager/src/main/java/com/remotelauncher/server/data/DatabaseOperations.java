@@ -174,15 +174,23 @@ public class DatabaseOperations {
 
     public List<HashMap<String, Object>> getQueueUpdateOfTaskSessions(boolean isCompleted, String userId) {
         List<HashMap<String, Object>> result = new ArrayList<>();
-        String query = "SELECT * FROM remotelauncher.tasks WHERE user_id = ?";
+        String query = "SELECT * FROM remotelauncher.tasks";
         ResultSet resultSet;
-        if (isCompleted) {
-            query += " and is_completed = ?";
-            resultSet = executeQueryWithParams(query, userId, !isCompleted);
+        if (userId != null) {
+            query += " WHERE user_id = ?";
+            if (isCompleted) {
+                query += " and is_completed = ?";
+                resultSet = executeQueryWithParams(query, userId, !isCompleted);
+            }
+            else {
+                resultSet = executeQueryWithParams(query, userId);
+            }
         }
-        else {
-            resultSet = executeQueryWithParams(query, userId);
+        else if (isCompleted) {
+            query += " WHERE is_completed = ?";
+            resultSet = executeQueryWithParams(query, !isCompleted);
         }
+
         try {
             while(resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();

@@ -115,7 +115,7 @@ public class RequestProcessor {
     }
 
     public void sendUpdateOfTaskSessionQueue(Response response, String message) {
-        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
+        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfTaskSessions(!showUncompletedTasks, showMyTasks ? userId : null);
         response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
         response.setParameter(ServerConstants.QUEUE, queueUpdate);
         response.setParameter(ServerConstants.MESSAGE, message);
