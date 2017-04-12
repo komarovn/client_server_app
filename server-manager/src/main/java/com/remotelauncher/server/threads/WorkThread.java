@@ -9,8 +9,6 @@ package com.remotelauncher.server.threads;
 import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
 import com.remotelauncher.server.threads.communication.RequestThread;
-import com.remotelauncher.server.threads.communication.ResponseThread;
-import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class WorkThread extends Thread {

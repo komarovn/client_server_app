@@ -69,7 +69,6 @@ public class RemoteLauncherController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         taskQueue.setItems(taskQueueItems);
-
         loadFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -224,6 +223,10 @@ public class RemoteLauncherController implements Initializable {
         request.setParameter(ClientConstants.SHOW_UNCOMPLETED_TASKS, showUncompletedTasks);
         request.setParameter(ClientConstants.SHOW_MY_TASKS_ONLY, showMyTasksOnly);
         requestListener.sendRequest(request);
+    }
+
+    public void loadUserData() {
+        sendFilterRequest();
     }
 
 }

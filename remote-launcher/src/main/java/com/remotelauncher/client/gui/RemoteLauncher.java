@@ -103,6 +103,7 @@ public class RemoteLauncher extends Application {
             PresenterManager<RemoteLauncherController> presenterManager = new PresenterManager<>();
             presenterManager.setController(controller);
             controller.addRequestListener(requestThread);
+            controller.loadUserData();
             responseThread.addResponseListener(presenterManager);
 
             stage.getScene().setRoot(root);

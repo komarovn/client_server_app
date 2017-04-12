@@ -8,7 +8,6 @@ package com.remotelauncher.client.gui.controllers;
 
 import com.remotelauncher.ClientConstants;
 import com.remotelauncher.client.listeners.RequestListener;
-import com.remotelauncher.client.listeners.ResponseListener;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;

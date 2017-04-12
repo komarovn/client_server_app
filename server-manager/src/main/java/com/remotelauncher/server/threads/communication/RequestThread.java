@@ -8,7 +8,6 @@ package com.remotelauncher.server.threads.communication;
 
 import com.remotelauncher.server.RequestProcessor;
 import com.remotelauncher.server.listeners.ResponseListener;
-import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;

@@ -10,7 +10,6 @@ import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
 import com.remotelauncher.server.threads.SchedulerThread;
 import com.remotelauncher.server.threads.ServerThread;
-import com.remotelauncher.server.threads.WorkThread;
 import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
@@ -18,8 +17,6 @@ import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.sql.Blob;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,7 +45,6 @@ public class RequestProcessor {
                     userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
                     LOGGER.info("User {} has been connected", userId);
                     response.setParameter(ServerConstants.USER_ID, userId);
-                    updateTaskSessionQueue(response, "Load session\n");
                 } else {
                     response.setParameter(ServerConstants.MESSAGE, "incorrect-password");
                 }
@@ -81,6 +77,9 @@ public class RequestProcessor {
                     break;
                 case FILTERQUEUE:
                     receiveRequestForFilter(request, response);
+                    break;
+                case LOADDATA:
+                    loadUsersData(response);
                     break;
                 default:
                     unrecognizedMessageType(response);
@@ -118,6 +117,11 @@ public class RequestProcessor {
         showMyTasks = (Boolean) request.getParameter(ServerConstants.SHOW_MY_TASKS_ONLY);
         showUncompletedTasks = (Boolean) request.getParameter(ServerConstants.SHOW_UNCOMPLETED_TASKS);
         updateTaskSessionQueue(response, "Apply filter\n");
+    }
+
+    private void loadUsersData(Response response) {
+        response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
+        updateTaskSessionQueue(response, "Load data\n");
     }
 
     private void updateTaskSessionQueue(Response response, String message) {
