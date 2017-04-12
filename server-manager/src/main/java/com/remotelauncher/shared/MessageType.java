@@ -11,5 +11,6 @@ public enum MessageType {
     LOGIN,
     ADMINISTRATIVE,
     QUEUEUPDATE,
-    DLRESULT
+    DLRESULT,
+    FILTERQUEUE
 }

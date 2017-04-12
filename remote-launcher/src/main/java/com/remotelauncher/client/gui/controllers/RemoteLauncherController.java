@@ -22,10 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -63,6 +60,16 @@ public class RemoteLauncherController implements Initializable {
 
     @FXML
     private ListView<CellView> taskQueue;
+
+    /* Filter Queue */
+    @FXML
+    private RadioMenuItem uncompletedTasksOnly;
+    @FXML
+    private RadioMenuItem allTasks;
+    @FXML
+    private RadioMenuItem myTasksOnly;
+    @FXML
+    private RadioMenuItem allUsersTasks;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -103,6 +110,7 @@ public class RemoteLauncherController implements Initializable {
                 taskName.setText("");
             }
         });
+        initFilterQueue();
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
@@ -115,6 +123,33 @@ public class RemoteLauncherController implements Initializable {
 
     public void addRequestListener(RequestListener listener) {
         requestListener = listener;
+    }
+
+    private void initFilterQueue() {
+        uncompletedTasksOnly.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sendFilterRequest();
+            }
+        });
+        allTasks.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sendFilterRequest();
+            }
+        });
+        myTasksOnly.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sendFilterRequest();
+            }
+        });
+        allUsersTasks.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sendFilterRequest();
+            }
+        });
     }
 
     private void openChooseFileDialog() {
@@ -174,6 +209,26 @@ public class RemoteLauncherController implements Initializable {
                 };
             }
         });
+    }
+
+    private void sendFilterRequest() {
+        boolean showUncompletedTasks = true;
+        boolean showMyTasksOnly = true;
+        if (uncompletedTasksOnly.isSelected()) {
+            showUncompletedTasks = true;
+        } else if (allTasks.isSelected()) {
+            showUncompletedTasks = false;
+        }
+        if (myTasksOnly.isSelected()) {
+            showMyTasksOnly = true;
+        } else if (allUsersTasks.isSelected()) {
+            showMyTasksOnly = false;
+        }
+        Request request = new Request();
+        request.setParameter(ClientConstants.TYPE, MessageType.FILTERQUEUE);
+        request.setParameter(ClientConstants.SHOW_UNCOMPLETED_TASKS, showUncompletedTasks);
+        request.setParameter(ClientConstants.SHOW_MY_TASKS_ONLY, showMyTasksOnly);
+        requestListener.sendRequest(request);
     }
 
 }

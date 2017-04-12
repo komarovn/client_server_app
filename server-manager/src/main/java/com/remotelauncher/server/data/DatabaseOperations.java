@@ -59,6 +59,20 @@ public class DatabaseOperations {
         }
     }
 
+    public ResultSet executeQueryWithParams(String query, Object... param) {
+        ResultSet result = null;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            for (int i = 0; i < param.length; i++) {
+                statement.setObject(i + 1, param[i]);
+            }
+            result = statement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public boolean isUserExists(String name) {
         if (name == null) throw new NullPointerException();
         String query = "SELECT * FROM remotelauncher.users WHERE `name` = '" + name + "'";
@@ -139,6 +153,7 @@ public class DatabaseOperations {
         }
     }
 
+    @Deprecated
     public List<HashMap<String, Object>> getQueueUpdateOfUndoneTaskSessions() {
         List<HashMap<String, Object>> result = new ArrayList<>();
         String query = "SELECT * FROM remotelauncher.tasks WHERE is_completed=0";
@@ -148,6 +163,32 @@ public class DatabaseOperations {
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put(ServerConstants.TASK_ID, resultSet.getInt(1));
                 hashMap.put(ServerConstants.TASK_NAME, resultSet.getString(2));
+                hashMap.put(ServerConstants.TASK_USER_ID, resultSet.getInt(6));
+                result.add(hashMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<HashMap<String, Object>> getQueueUpdateOfTaskSessions(boolean isCompleted, String userId) {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String query = "SELECT * FROM remotelauncher.tasks WHERE user_id = ?";
+        ResultSet resultSet;
+        if (isCompleted) {
+            query += " and is_completed = ?";
+            resultSet = executeQueryWithParams(query, userId, !isCompleted);
+        }
+        else {
+            resultSet = executeQueryWithParams(query, userId);
+        }
+        try {
+            while(resultSet.next()) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put(ServerConstants.TASK_ID, resultSet.getInt(1));
+                hashMap.put(ServerConstants.TASK_NAME, resultSet.getString(2));
+                hashMap.put(ServerConstants.TASK_IS_COMPLETED, resultSet.getBoolean(4));
                 hashMap.put(ServerConstants.TASK_USER_ID, resultSet.getInt(6));
                 result.add(hashMap);
             }

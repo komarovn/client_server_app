@@ -29,6 +29,8 @@ public class WorkThread extends Thread {
     private TaskSession taskSession;
     private List<String> filesToExecute;
     private List<String> outputFiles;
+    //private static boolean showUncompletedTasks = true;
+    //private static boolean showMyTasks = true;
 
     public WorkThread(TaskSession taskSession) {
         filesToExecute = new ArrayList<>();
@@ -129,4 +131,12 @@ public class WorkThread extends Thread {
         }
     }
 
+    /*
+    public static void setShowUncompletedTasks(boolean showUncompletedTasks) {
+        WorkThread.showUncompletedTasks = showUncompletedTasks;
+    }
+
+    public static void setShowMyTasks(boolean showMyTasks) {
+        WorkThread.showMyTasks = showMyTasks;
+    }*/
 }

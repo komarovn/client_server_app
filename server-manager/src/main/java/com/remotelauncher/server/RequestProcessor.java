@@ -10,6 +10,7 @@ import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
 import com.remotelauncher.server.threads.SchedulerThread;
 import com.remotelauncher.server.threads.ServerThread;
+import com.remotelauncher.server.threads.WorkThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
@@ -68,6 +69,9 @@ public class RequestProcessor {
                 case ADMINISTRATIVE:
                     response.setParameter(ServerConstants.TYPE, MessageType.ADMINISTRATIVE);
                     break;
+                case FILTERQUEUE:
+                    receiveRequestForFilter(request);
+                    break;
                 default:
                     unrecognizedMessageType(response);
             }
@@ -98,5 +102,11 @@ public class RequestProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void receiveRequestForFilter(Request request) {
+        //WorkThread.setShowMyTasks((Boolean) request.getParameter(ServerConstants.SHOW_MY_TASKS_ONLY));
+        //WorkThread.setShowUncompletedTasks((Boolean) request.getParameter(ServerConstants.SHOW_UNCOMPLETED_TASKS));
+        WorkThread.sendUpdateOfTaskSessionQueue("Apply filter\n");
     }
 }
