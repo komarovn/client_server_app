@@ -8,6 +8,7 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.server.threads.communication.ResponseThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Response;
@@ -29,8 +30,6 @@ public class WorkThread extends Thread {
     private TaskSession taskSession;
     private List<String> filesToExecute;
     private List<String> outputFiles;
-    //private static boolean showUncompletedTasks = true;
-    //private static boolean showMyTasks = true;
 
     public WorkThread(TaskSession taskSession) {
         filesToExecute = new ArrayList<>();
@@ -107,15 +106,10 @@ public class WorkThread extends Thread {
 
     public static void sendUpdateOfTaskSessionQueue(String message) {
         List<Thread> communicationThreads = ServerThread.getCommunicationThreads();
-        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
 
-        Response response = new Response();
-        response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
-        response.setParameter(ServerConstants.QUEUE, queueUpdate);
-        response.setParameter(ServerConstants.MESSAGE, message);
         for (Thread thread : communicationThreads) {
-            if (thread instanceof ResponseThread) {
-                ((ResponseThread) thread).sendResponse(response);
+            if (thread instanceof RequestThread) {
+                ((RequestThread) thread).getRequestProcessor().sendUpdateOfTaskSessionQueue(new Response(), message);
             }
         }
     }
@@ -131,12 +125,4 @@ public class WorkThread extends Thread {
         }
     }
 
-    /*
-    public static void setShowUncompletedTasks(boolean showUncompletedTasks) {
-        WorkThread.showUncompletedTasks = showUncompletedTasks;
-    }
-
-    public static void setShowMyTasks(boolean showMyTasks) {
-        WorkThread.showMyTasks = showMyTasks;
-    }*/
 }

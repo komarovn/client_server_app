@@ -25,7 +25,7 @@ public class RequestThread extends Thread {
     private Socket clientSocket;
     private ObjectInputStream objectInputStream;
     private ResponseListener responseListener;
-    private RequestProcessor requestProcessor;
+    private final RequestProcessor requestProcessor;
 
     public RequestThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -75,6 +75,10 @@ public class RequestThread extends Thread {
         Response response = new Response();
         requestProcessor.process(request, response);
         responseListener.sendResponse(response);
+    }
+
+    public RequestProcessor getRequestProcessor() {
+        return requestProcessor;
     }
 
     public void stopRequestThread() {

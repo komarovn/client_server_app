@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * One client has his own Request Processor
@@ -27,6 +29,8 @@ public class RequestProcessor {
     private Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
     private String userId;
+    private boolean showUncompletedTasks = true;
+    private boolean showMyTasks = true;
 
     private void receiveToken(Request request, Response response) {
         try {
@@ -38,7 +42,7 @@ public class RequestProcessor {
                     userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
                     LOGGER.info("User {} has been connected", userId);
                     response.setParameter(ServerConstants.USER_ID, userId);
-                    //TODO: send queue update
+                    sendUpdateOfTaskSessionQueue(response, "Load session\n");
                 } else {
                     response.setParameter(ServerConstants.MESSAGE, "incorrect-password");
                 }
@@ -70,7 +74,7 @@ public class RequestProcessor {
                     response.setParameter(ServerConstants.TYPE, MessageType.ADMINISTRATIVE);
                     break;
                 case FILTERQUEUE:
-                    receiveRequestForFilter(request);
+                    receiveRequestForFilter(request, response);
                     break;
                 default:
                     unrecognizedMessageType(response);
@@ -104,9 +108,16 @@ public class RequestProcessor {
         }
     }
 
-    private void receiveRequestForFilter(Request request) {
-        //WorkThread.setShowMyTasks((Boolean) request.getParameter(ServerConstants.SHOW_MY_TASKS_ONLY));
-        //WorkThread.setShowUncompletedTasks((Boolean) request.getParameter(ServerConstants.SHOW_UNCOMPLETED_TASKS));
-        WorkThread.sendUpdateOfTaskSessionQueue("Apply filter\n");
+    private void receiveRequestForFilter(Request request, Response response) {
+        showMyTasks = (Boolean) request.getParameter(ServerConstants.SHOW_MY_TASKS_ONLY);
+        showUncompletedTasks = (Boolean) request.getParameter(ServerConstants.SHOW_UNCOMPLETED_TASKS);
+        sendUpdateOfTaskSessionQueue(response, "Apply filter\n");
+    }
+
+    public void sendUpdateOfTaskSessionQueue(Response response, String message) {
+        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
+        response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
+        response.setParameter(ServerConstants.QUEUE, queueUpdate);
+        response.setParameter(ServerConstants.MESSAGE, message);
     }
 }
