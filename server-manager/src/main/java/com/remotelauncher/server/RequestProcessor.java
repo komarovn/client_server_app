@@ -11,6 +11,7 @@ import com.remotelauncher.server.data.TaskSession;
 import com.remotelauncher.server.threads.SchedulerThread;
 import com.remotelauncher.server.threads.ServerThread;
 import com.remotelauncher.server.threads.WorkThread;
+import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
@@ -28,9 +29,14 @@ import java.util.List;
 public class RequestProcessor {
     private Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
+    private RequestThread owner;
     private String userId;
     private boolean showUncompletedTasks = true;
     private boolean showMyTasks = true;
+
+    public RequestProcessor(RequestThread owner) {
+        this.owner = owner;
+    }
 
     private void receiveToken(Request request, Response response) {
         try {
@@ -42,7 +48,7 @@ public class RequestProcessor {
                     userId = ServerThread.getDatabaseOperations().getUserIdByName(token);
                     LOGGER.info("User {} has been connected", userId);
                     response.setParameter(ServerConstants.USER_ID, userId);
-                    sendUpdateOfTaskSessionQueue(response, "Load session\n");
+                    updateTaskSessionQueue(response, "Load session\n");
                 } else {
                     response.setParameter(ServerConstants.MESSAGE, "incorrect-password");
                 }
@@ -111,13 +117,19 @@ public class RequestProcessor {
     private void receiveRequestForFilter(Request request, Response response) {
         showMyTasks = (Boolean) request.getParameter(ServerConstants.SHOW_MY_TASKS_ONLY);
         showUncompletedTasks = (Boolean) request.getParameter(ServerConstants.SHOW_UNCOMPLETED_TASKS);
-        sendUpdateOfTaskSessionQueue(response, "Apply filter\n");
+        updateTaskSessionQueue(response, "Apply filter\n");
     }
 
-    public void sendUpdateOfTaskSessionQueue(Response response, String message) {
+    private void updateTaskSessionQueue(Response response, String message) {
         List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfTaskSessions(!showUncompletedTasks, showMyTasks ? userId : null);
         response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
         response.setParameter(ServerConstants.QUEUE, queueUpdate);
         response.setParameter(ServerConstants.MESSAGE, message);
+    }
+
+    /* Use outside of this class only */
+    public void sendUpdateOfTaskSessionQueue(Response response, String message) {
+        updateTaskSessionQueue(response, message);
+        owner.sendResponse(response);
     }
 }

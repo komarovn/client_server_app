@@ -29,7 +29,7 @@ public class RequestThread extends Thread {
 
     public RequestThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.requestProcessor = new RequestProcessor();
+        this.requestProcessor = new RequestProcessor(this);
     }
 
     @Override
@@ -74,11 +74,15 @@ public class RequestThread extends Thread {
     public void processRequest(Request request) {
         Response response = new Response();
         requestProcessor.process(request, response);
-        responseListener.sendResponse(response);
+        sendResponse(response);
     }
 
     public RequestProcessor getRequestProcessor() {
         return requestProcessor;
+    }
+
+    public void sendResponse(Response response) {
+        responseListener.sendResponse(response);
     }
 
     public void stopRequestThread() {
