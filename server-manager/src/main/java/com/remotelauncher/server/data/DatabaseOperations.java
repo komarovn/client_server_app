@@ -190,7 +190,10 @@ public class DatabaseOperations {
             query += " WHERE is_completed = ?";
             resultSet = executeQueryWithParams(query, !isCompleted);
         }
-
+        else {
+            resultSet = executeSingleQuery(query);
+        }
+        
         try {
             while(resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
