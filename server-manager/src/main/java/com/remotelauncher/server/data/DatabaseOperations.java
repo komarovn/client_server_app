@@ -178,7 +178,7 @@ public class DatabaseOperations {
         ResultSet resultSet;
         if (userId != null) {
             query += " WHERE user_id = ?";
-            if (isCompleted) {
+            if (!isCompleted) {
                 query += " and is_completed = ?";
                 resultSet = executeQueryWithParams(query, userId, isCompleted);
             }
@@ -186,7 +186,7 @@ public class DatabaseOperations {
                 resultSet = executeQueryWithParams(query, userId);
             }
         }
-        else if (isCompleted) {
+        else if (!isCompleted) {
             query += " WHERE is_completed = ?";
             resultSet = executeQueryWithParams(query, isCompleted);
         }
