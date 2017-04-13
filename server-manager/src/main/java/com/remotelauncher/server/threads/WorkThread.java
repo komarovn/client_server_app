@@ -59,10 +59,11 @@ public class WorkThread extends Thread {
         return filename;
     }
 
-    private byte[] readOutputFile(String fileName) {
-        byte[] data = new byte[(int) fileName.length()];
+    private byte[] readOutputFile(String fileNamePath) {
+        byte[] data = new byte[0];
         try {
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
+            data = new byte[(int) Files.size(Paths.get(fileNamePath))];
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileNamePath));
             inputStream.read(data, 0, data.length);
             inputStream.close();
         } catch (IOException e) {
