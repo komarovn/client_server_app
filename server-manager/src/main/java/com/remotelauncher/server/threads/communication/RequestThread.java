@@ -8,7 +8,6 @@ package com.remotelauncher.server.threads.communication;
 
 import com.remotelauncher.server.RequestProcessor;
 import com.remotelauncher.server.listeners.ResponseListener;
-import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
@@ -25,11 +24,11 @@ public class RequestThread extends Thread {
     private Socket clientSocket;
     private ObjectInputStream objectInputStream;
     private ResponseListener responseListener;
-    private RequestProcessor requestProcessor;
+    private final RequestProcessor requestProcessor;
 
     public RequestThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.requestProcessor = new RequestProcessor();
+        this.requestProcessor = new RequestProcessor(this);
     }
 
     @Override
@@ -74,6 +73,14 @@ public class RequestThread extends Thread {
     public void processRequest(Request request) {
         Response response = new Response();
         requestProcessor.process(request, response);
+        sendResponse(response);
+    }
+
+    public RequestProcessor getRequestProcessor() {
+        return requestProcessor;
+    }
+
+    public void sendResponse(Response response) {
         responseListener.sendResponse(response);
     }
 

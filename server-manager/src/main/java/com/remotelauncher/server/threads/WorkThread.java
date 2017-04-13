@@ -8,16 +8,16 @@ package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
 import com.remotelauncher.server.data.TaskSession;
-import com.remotelauncher.server.threads.communication.ResponseThread;
-import com.remotelauncher.shared.MessageType;
+import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.AbstractMap;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class WorkThread extends Thread {
@@ -49,6 +49,7 @@ public class WorkThread extends Thread {
             try {
                 bufferedOutputStream.write(taskSession.getTask());
                 bufferedOutputStream.flush();
+                bufferedOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,6 +64,7 @@ public class WorkThread extends Thread {
         try {
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
             inputStream.read(data, 0, data.length);
+            inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,40 +72,53 @@ public class WorkThread extends Thread {
     }
 
     private void execute() {
-        Process execution = null;
+        Process execution;
         Runtime runtime = Runtime.getRuntime();
-        String executeFile = this.saveTaskToFile();
-        String outputFile = "task_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".output";
+        String executeFile = saveTaskToFile();
+        String outputFile = ServerConstants.PATH_TO_TASKS + "output_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".txt";
         outputFiles.add(outputFile);
         filesToExecute.add(executeFile);
         try {
-            execution = runtime.exec("cmd /c cd " + ServerConstants.PATH_TO_TASKS + " & cmd /c call " + executeFile + " > " + outputFile);
+            try {
+                sleep(10000); // sleep for 50 sec - testing our tasks queue
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            execution = runtime.exec("cmd /C call " + executeFile + " > " + outputFile, null, new File(ServerConstants.PATH_TO_TASKS));
             execution.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
         LOGGER.info("TASK {} COMPLETED", taskSession.getTaskId());
-        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(ServerConstants.PATH_TO_TASKS + outputFile));
-        File file = new File(ServerConstants.PATH_TO_TASKS + outputFile);
-        file.delete();
-        file = new File(executeFile);
-        file.delete();
-        //TODO: delete correctly
+        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(outputFile));
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        deleteFile(outputFile);
+        deleteFile(executeFile);
         sendUpdateOfTaskSessionQueue("TASK COMPLETE QUEUE UPDATE\n");
     }
 
     public static void sendUpdateOfTaskSessionQueue(String message) {
         List<Thread> communicationThreads = ServerThread.getCommunicationThreads();
-        List<HashMap<String, Object>> queueUpdate = ServerThread.getDatabaseOperations().getQueueUpdateOfUndoneTaskSessions();
 
-        Response response = new Response();
-        response.setParameter("type", MessageType.QUEUEUPDATE);
-        response.setParameter("queue_update", queueUpdate);
-        response.setParameter("message", message);
         for (Thread thread : communicationThreads) {
-            if (thread instanceof ResponseThread) {
-                ((ResponseThread) thread).sendResponse(response);
+            if (thread instanceof RequestThread) {
+                ((RequestThread) thread).getRequestProcessor().sendUpdateOfTaskSessionQueue(new Response(), message);
             }
+        }
+    }
+
+    private void deleteFile(String path) {
+        try {
+            Files.deleteIfExists(Paths.get(path));
+            LOGGER.trace("File {} has been deleted", path);
+        } catch (FileSystemException e) {
+            LOGGER.error("File has not been deleted: {}", e.getReason());
+        } catch (IOException e) {
+            LOGGER.error("File {} has not been deleted", path);
         }
     }
 

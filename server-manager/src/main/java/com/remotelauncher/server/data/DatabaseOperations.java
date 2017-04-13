@@ -6,6 +6,8 @@
  */
 package com.remotelauncher.server.data;
 
+import com.remotelauncher.ServerConstants;
+
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
 import java.util.ArrayList;
@@ -57,6 +59,20 @@ public class DatabaseOperations {
         }
     }
 
+    public ResultSet executeQueryWithParams(String query, Object... param) {
+        ResultSet result = null;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            for (int i = 0; i < param.length; i++) {
+                statement.setObject(i + 1, param[i]);
+            }
+            result = statement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public boolean isUserExists(String name) {
         if (name == null) throw new NullPointerException();
         String query = "SELECT * FROM remotelauncher.users WHERE `name` = '" + name + "'";
@@ -103,12 +119,13 @@ public class DatabaseOperations {
         return false;
     }
 
-    public String insertNewTask(byte[] task, String userId) {
+    public String insertNewTask(byte[] task, String name, String userId, String format) {
         String taskId = String.valueOf(Math.abs(UUID.randomUUID().hashCode()));
         try {
-            Blob blob = new SerialBlob(task);
-            String query = "INSERT INTO remotelauncher.tasks (`task_id`, `task`, `is_completed`, `user_id`) VALUES(?, ?, 0, ?)";
-            executeStatement(query, taskId, task, userId);
+            Blob taskBlob = new SerialBlob(task);
+            String query = "INSERT INTO remotelauncher.tasks (`task_id`, `name`, `task`, `is_completed`, `user_id`, " +
+                    "`format_type`) VALUES(?, ?, ?, 0, ?, ?)";
+            executeStatement(query, taskId, name, taskBlob, userId, format);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -136,16 +153,54 @@ public class DatabaseOperations {
         }
     }
 
+    @Deprecated
     public List<HashMap<String, Object>> getQueueUpdateOfUndoneTaskSessions() {
         List<HashMap<String, Object>> result = new ArrayList<>();
         String query = "SELECT * FROM remotelauncher.tasks WHERE is_completed=0";
         ResultSet resultSet =  executeSingleQuery(query);
         try {
-            while(resultSet.next()){
+            while(resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("task_id", resultSet.getInt(1));
-                hashMap.put("user_id", resultSet.getInt(5));
-                //TODO:: hashmap.put("name", ...);
+                hashMap.put(ServerConstants.TASK_ID, resultSet.getInt(1));
+                hashMap.put(ServerConstants.TASK_NAME, resultSet.getString(2));
+                hashMap.put(ServerConstants.TASK_USER_ID, resultSet.getInt(6));
+                result.add(hashMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<HashMap<String, Object>> getQueueUpdateOfTaskSessions(boolean isCompleted, String userId) {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String query = "SELECT * FROM remotelauncher.tasks";
+        ResultSet resultSet;
+        if (userId != null) {
+            query += " WHERE user_id = ?";
+            if (!isCompleted) {
+                query += " and is_completed = ?";
+                resultSet = executeQueryWithParams(query, userId, isCompleted);
+            }
+            else {
+                resultSet = executeQueryWithParams(query, userId);
+            }
+        }
+        else if (!isCompleted) {
+            query += " WHERE is_completed = ?";
+            resultSet = executeQueryWithParams(query, isCompleted);
+        }
+        else {
+            resultSet = executeSingleQuery(query);
+        }
+
+        try {
+            while(resultSet.next()) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put(ServerConstants.TASK_ID, resultSet.getInt(1));
+                hashMap.put(ServerConstants.TASK_NAME, resultSet.getString(2));
+                hashMap.put(ServerConstants.TASK_IS_COMPLETED, resultSet.getBoolean(4));
+                hashMap.put(ServerConstants.TASK_USER_ID, resultSet.getInt(6));
                 result.add(hashMap);
             }
         } catch (SQLException e) {

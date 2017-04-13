@@ -66,6 +66,7 @@ public class ServerController implements Initializable {
             public void handle(ActionEvent event) {
                 statusLabel.setText(SERVER_SHUTTING_DOWN);
                 statusColor.setStyle("-fx-background-color: yellow; -fx-background-radius: 20px");
+                // TODO: stop server in new thread; set up shutting down state.
                 mainApp.stopTCPServer();
                 statusLabel.setText(SERVER_OFF);
                 statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
