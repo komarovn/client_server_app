@@ -1,0 +1,13 @@
+INSERT INTO remotelauncher.users (name, password) VALUES ('root', 'root');
+INSERT INTO remotelauncher.users (name, password) VALUES ('rpovelik', 'rpovelik');
+INSERT INTO remotelauncher.users (name, password) VALUES ('Java', 'Java');
+INSERT INTO remotelauncher.users (name, password) VALUES ('goverment', 'goverment');
+INSERT INTO remotelauncher.users (name, password) VALUES ('baranov', 'baranov');
+INSERT INTO remotelauncher.users (name, password) VALUES ('Anna', 'Anna');
+INSERT INTO remotelauncher.users (name, password) VALUES ('KSE', 'KSE');
+INSERT INTO remotelauncher.users (name, password) VALUES ('hov', 'hov');
+INSERT INTO remotelauncher.users (name, password) VALUES ('Majority', 'Majority');
+INSERT INTO remotelauncher.users (name, password) VALUES ('Smoke', 'SMoke');
+INSERT INTO remotelauncher.users (name, password) VALUES ('Fifa2017', 'Fifa2017');
+INSERT INTO remotelauncher.users (name, password) VALUES ('GO', 'GO');
+INSERT INTO remotelauncher.users (name, password) VALUES ('uy', 'gh');
