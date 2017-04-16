@@ -209,6 +209,22 @@ public class DatabaseOperations {
         return result;
     }
 
+    public byte[] getResultFile(Integer taskId) {
+        byte[] data = null;
+        String query = "SELECT file FROM remotelauncher.output WHERE remotelauncher.output.output_id = " +
+                "(SELECT remotelauncher.tasks.output_id FROM remotelauncher.tasks WHERE task_id = ?);";
+        ResultSet result = executeQueryWithParams(query, taskId);
+        try {
+            while (result.next()) {
+                Blob dataBlob = result.getBlob(1);
+                data = dataBlob.getBytes(1, (int) dataBlob.length());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public Connection getConnection() {
         return connection;
     }

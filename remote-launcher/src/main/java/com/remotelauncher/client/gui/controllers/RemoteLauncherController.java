@@ -42,9 +42,10 @@ public class RemoteLauncherController implements Initializable {
     private RemoteLauncher mainApp;
     private String userId;
     private RequestListener requestListener;
-    private ObservableList taskQueueItems = FXCollections.observableArrayList();
+    private ObservableList<CellView> taskQueueItems = FXCollections.observableArrayList();
     private ObservableList taskGroupsList = FXCollections.observableArrayList();
     private List<Task> tasksList = new ArrayList<>();
+    private File filePathToDownload;
 
     @FXML
     private ListView<CellView> taskQueue;
@@ -74,6 +75,12 @@ public class RemoteLauncherController implements Initializable {
     private RadioMenuItem myTasksOnly;
     @FXML
     private RadioMenuItem allUsersTasks;
+
+    /* Manage Task */
+    @FXML
+    private TextField taskNameManageTask;
+    @FXML
+    private Button downloadResultFile;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -123,6 +130,7 @@ public class RemoteLauncherController implements Initializable {
                 taskName.setText("");
             }
         });
+        initManageTask();
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
@@ -186,6 +194,15 @@ public class RemoteLauncherController implements Initializable {
         }
         else {
             createTask.setDisable(false);
+        }
+    }
+
+    private void validateManageTask() {
+        if (!taskNameManageTask.getText().isEmpty()) {
+            downloadResultFile.setDisable(false);
+        }
+        else {
+            downloadResultFile.setDisable(true);
         }
     }
 
@@ -259,6 +276,58 @@ public class RemoteLauncherController implements Initializable {
 
     public void loadUserData() {
         sendFilterRequest();
+    }
+
+    private void initManageTask() {
+        taskNameManageTask.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                validateManageTask();
+            }
+        });
+        taskQueue.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                CellView task = taskQueue.getSelectionModel().getSelectedItem();
+                if (task.getUserId().toString().equals(userId)) {
+                    taskNameManageTask.setText(task.getTaskName());
+                }
+                else {
+                    taskNameManageTask.setText("");
+                }
+            }
+        });
+        downloadResultFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                filePathToDownload = null;
+                FileChooser saveFileDialog = new FileChooser();
+                filePathToDownload = saveFileDialog.showSaveDialog(downloadResultFile.getScene().getWindow());
+                if (filePathToDownload != null) {
+                    prepareDownloadResult(taskNameManageTask.getText());
+                }
+            }
+        });
+        validateManageTask();
+    }
+
+    private void prepareDownloadResult(String taskName) {
+        Integer taskId = null;
+        for (CellView task : taskQueueItems) {
+            if (task.getTaskName().equals(taskName)) {
+                taskId = task.getTaskId();
+            }
+        }
+        if (taskId != null) {
+            Request request = new Request();
+            request.setParameter(ClientConstants.TYPE, MessageType.DLRESULT);
+            request.setParameter(ClientConstants.TASK_ID, taskId);
+            requestListener.sendRequest(request);
+        }
+    }
+
+    public void downloadResult(byte[] data) {
+        ControllerHelper.saveDataToFile(filePathToDownload, data);
     }
 
     private class Task {

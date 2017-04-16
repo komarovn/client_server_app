@@ -83,6 +83,9 @@ public class RequestProcessor {
                 case LOADDATA:
                     loadUsersData(response);
                     break;
+                case DLRESULT:
+                    receiveDownloadResult(request, response);
+                    break;
                 default:
                     unrecognizedMessageType(response);
             }
@@ -135,6 +138,12 @@ public class RequestProcessor {
         response.setParameter(ServerConstants.TYPE, MessageType.QUEUEUPDATE);
         response.setParameter(ServerConstants.QUEUE, queueUpdate);
         response.setParameter(ServerConstants.MESSAGE, message);
+    }
+
+    private void receiveDownloadResult(Request request, Response response) {
+        byte[] data = ServerThread.getDatabaseOperations().getResultFile((Integer) request.getParameter(ServerConstants.TASK_ID));
+        response.setParameter(ServerConstants.TYPE, MessageType.DLRESULT);
+        response.setParameter(ServerConstants.RESULT_FILE, data);
     }
 
     /* Use outside of this class only */
