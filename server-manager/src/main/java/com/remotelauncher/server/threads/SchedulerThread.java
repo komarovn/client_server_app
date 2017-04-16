@@ -7,12 +7,8 @@
 package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
-import com.remotelauncher.server.data.TaskSession;
-import com.remotelauncher.server.threads.communication.ResponseThread;
-import com.remotelauncher.shared.MessageType;
-import com.remotelauncher.shared.Response;
+import com.remotelauncher.server.data.Task;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -21,9 +17,10 @@ public class SchedulerThread extends Thread {
 
     private static Integer workThreadCounter;
     private final Integer workThreadThreshold = ServerConstants.WORK_THREAD_THRESHOLD;
-    private static Queue<TaskSession> taskSessionsQueue;
+    private static Queue<List<Task>> taskSessionsQueue;
 
     public SchedulerThread() {
+        // TODO: get all uncomleted tasks from db.
         workThreadCounter = 0;
         this.taskSessionsQueue = new LinkedList<>();
     }
@@ -49,14 +46,14 @@ public class SchedulerThread extends Thread {
     }
 
 
-    public static void addTaskSession(TaskSession taskSession) {
+    public static void addTaskSession(List<Task> taskSession) {
         synchronized (SchedulerThread.taskSessionsQueue) {
             taskSessionsQueue.add(taskSession);
         }
         WorkThread.sendUpdateOfTaskSessionQueue("TASK INSERT QUEUE UPDATE\n");
     }
 
-    public static TaskSession getTaskSession() {
+    public static List<Task> getTaskSession() {
         synchronized (SchedulerThread.taskSessionsQueue) {
             return taskSessionsQueue.remove();
         }
@@ -72,16 +69,11 @@ public class SchedulerThread extends Thread {
         }
     }
 
-    private void saveTaskQueue() {
-        //Save current taskQueue to DB
-    }
-
     public void stopSchedulerThread() {
         while (SchedulerThread.getWorkThreadCounter() != 0) {
             //Here we are waiting until all the running workthreads finish their task sessions
             //Kind of soft stopping
         }
-        saveTaskQueue();
         stop();
     }
 

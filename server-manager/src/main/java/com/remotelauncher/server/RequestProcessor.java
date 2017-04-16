@@ -7,16 +7,18 @@
 package com.remotelauncher.server;
 
 import com.remotelauncher.ServerConstants;
-import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.data.Task;
 import com.remotelauncher.server.threads.SchedulerThread;
 import com.remotelauncher.server.threads.ServerThread;
 import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
 import com.remotelauncher.shared.Response;
+import com.remotelauncher.shared.TaskItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,17 +102,21 @@ public class RequestProcessor {
     }
 
     private void receiveTaskSession(Request request, Response response) {
-        int taskFileSize = (Integer) (request.getParameter(ServerConstants.TASK_FILE_SIZE));
+        List<TaskItem> taskSessionRequest = (List<TaskItem>) request.getParameter(ServerConstants.TASK_SESSION);
+        List<Task> taskSession = new ArrayList<>();
+        for (TaskItem taskItem : taskSessionRequest) {
+            int taskFileSize = taskItem.getFileLength();
+            byte[] data = taskItem.getData();
+            String name = taskItem.getTaskName();
+            String format = taskItem.getFileType();
+            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, name, userId, format);
+            taskSession.add(new Task(taskId, userId, data));
+        }
+        SchedulerThread.addTaskSession(taskSession);
+        /*int taskFileSize = (Integer) (request.getParameter(ServerConstants.TASK_FILE_SIZE));
         byte[] data = (byte[]) request.getParameter(ServerConstants.TASK_FILE);
         String name = (String) request.getParameter(ServerConstants.TASK_NAME);
-        String format = (String) request.getParameter(ServerConstants.TASK_FORMAT_TYPE);
-        try {
-            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, name, userId, format);
-            TaskSession taskSession = new TaskSession(taskId, userId, data);
-            SchedulerThread.addTaskSession(taskSession);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String format = (String) request.getParameter(ServerConstants.TASK_FORMAT_TYPE);*/
     }
 
     private void receiveRequestForFilter(Request request, Response response) {

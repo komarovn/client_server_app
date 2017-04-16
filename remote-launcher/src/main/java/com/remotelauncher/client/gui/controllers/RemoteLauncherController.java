@@ -12,6 +12,7 @@ import com.remotelauncher.client.listeners.RequestListener;
 import com.remotelauncher.client.gui.RemoteLauncher;
 import com.remotelauncher.shared.MessageType;
 import com.remotelauncher.shared.Request;
+import com.remotelauncher.shared.TaskItem;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -20,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -30,6 +32,7 @@ import javafx.util.Callback;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -40,21 +43,27 @@ public class RemoteLauncherController implements Initializable {
     private String userId;
     private RequestListener requestListener;
     private ObservableList taskQueueItems = FXCollections.observableArrayList();
-
-    @FXML
-    private Button loadFile;
-
-    @FXML
-    private TextField filePath;
-
-    @FXML
-    private TextField taskName;
-
-    @FXML
-    private Button createTask;
+    private ObservableList taskGroupsList = FXCollections.observableArrayList();
+    private List<Task> tasksList = new ArrayList<>();
 
     @FXML
     private ListView<CellView> taskQueue;
+    @FXML
+    private ListView<CellView> taskGroups;
+
+    /* Task Group */
+    @FXML
+    private Group taskGroup;
+    @FXML
+    private Button loadFile;
+    @FXML
+    private TextField filePath;
+    @FXML
+    private TextField taskName;
+    @FXML
+    private Button createTask;
+    @FXML
+    private Button addNewTaskGroup;
 
     /* Filter Queue */
     @FXML
@@ -69,6 +78,7 @@ public class RemoteLauncherController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         taskQueue.setItems(taskQueueItems);
+        taskGroups.setItems(taskGroupsList);
         loadFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -100,11 +110,19 @@ public class RemoteLauncherController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 sendFile();
+                taskGroupsList.clear();
+            }
+        });
+        initFilterQueue();
+        addNewTaskGroup.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                tasksList.add(new Task(taskName.getText(), filePath.getText()));
+                taskGroupsList.add(taskName.getText());
                 filePath.setText(CHOOSE_A_FILE);
                 taskName.setText("");
             }
         });
-        initFilterQueue();
     }
 
     public void setMainApp(RemoteLauncher mainApp) {
@@ -159,21 +177,35 @@ public class RemoteLauncherController implements Initializable {
 
     private void validateCreateTask() {
         if (filePath.getText().equals(CHOOSE_A_FILE) || taskName.getText().isEmpty()) {
-            createTask.setDisable(true);
+            addNewTaskGroup.setDisable(true);
         } else {
+            addNewTaskGroup.setDisable(false);
+        }
+        if (taskGroupsList.isEmpty()) {
+            createTask.setDisable(true);
+        }
+        else {
             createTask.setDisable(false);
         }
     }
 
     private void sendFile() {
         Request request = new Request();
-        File file = new File(filePath.getText());
-        byte[] data = ControllerHelper.getDataFromFile(file);
         request.setParameter(ClientConstants.TYPE, MessageType.TASKSESSION);
-        request.setParameter(ClientConstants.TASK_FILE, data);
+        List<TaskItem> taskItems = new ArrayList<>();
+        for (Task task : tasksList) {
+            File file = new File(task.path);
+            byte[] data = ControllerHelper.getDataFromFile(file);
+            taskItems.add(new TaskItem(task.name,
+                    file.getName().substring(file.getName().indexOf(".")),
+                    data.length,
+                    data));
+        }
+        request.setParameter(ClientConstants.TASK_SESSION, taskItems);
+        /*request.setParameter(ClientConstants.TASK_FILE, data);
         request.setParameter(ClientConstants.TASK_FILE_SIZE, data.length);
         request.setParameter(ClientConstants.TASK_NAME, taskName.getText());
-        request.setParameter(ClientConstants.TASK_FORMAT_TYPE, file.getName().substring(file.getName().indexOf(".")));
+        request.setParameter(ClientConstants.TASK_FORMAT_TYPE, );*/
         requestListener.sendRequest(request);
     }
 
@@ -229,4 +261,13 @@ public class RemoteLauncherController implements Initializable {
         sendFilterRequest();
     }
 
+    private class Task {
+        public String name;
+        public String path;
+
+        public Task(String name, String path) {
+            this.name = name;
+            this.path = path;
+        }
+    }
 }

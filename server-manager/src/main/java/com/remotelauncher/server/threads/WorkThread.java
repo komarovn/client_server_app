@@ -7,7 +7,7 @@
 package com.remotelauncher.server.threads;
 
 import com.remotelauncher.ServerConstants;
-import com.remotelauncher.server.data.TaskSession;
+import com.remotelauncher.server.data.Task;
 import com.remotelauncher.server.threads.communication.RequestThread;
 import com.remotelauncher.shared.Response;
 import org.slf4j.Logger;
@@ -24,14 +24,14 @@ public class WorkThread extends Thread {
 
     private Logger LOGGER = LoggerFactory.getLogger(WorkThread.class);
 
-    private TaskSession taskSession;
+    private List<Task> taskSession;
     private List<String> filesToExecute;
     private List<String> outputFiles;
 
-    public WorkThread(TaskSession taskSession) {
+    public WorkThread(List<Task> task) {
         filesToExecute = new ArrayList<>();
         outputFiles = new ArrayList<>();
-        this.taskSession = taskSession;
+        this.taskSession = task;
     }
 
     @Override
@@ -39,15 +39,14 @@ public class WorkThread extends Thread {
         LOGGER.info("WORKTHREAD {} IS STARTED! {}", this.getId(), SchedulerThread.getWorkThreadCounter());
         execute();
         SchedulerThread.setWorkThreadCounter(SchedulerThread.getWorkThreadCounter() - 1);
-        //TODO: send update of queue to all
     }
 
-    private String saveTaskToFile() {
-        String filename = ServerConstants.PATH_TO_TASKS + "task_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".bat";
+    private String saveTaskToFile(Task task) {
+        String filename = ServerConstants.PATH_TO_TASKS + "task_" + task.getUserId() + "_" + task.getTaskId() + ".bat";
         try {
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filename));
             try {
-                bufferedOutputStream.write(taskSession.getTask());
+                bufferedOutputStream.write(task.getTask());
                 bufferedOutputStream.flush();
                 bufferedOutputStream.close();
             } catch (IOException e) {
@@ -75,31 +74,36 @@ public class WorkThread extends Thread {
     private void execute() {
         Process execution;
         Runtime runtime = Runtime.getRuntime();
-        String executeFile = saveTaskToFile();
-        String outputFile = ServerConstants.PATH_TO_TASKS + "output_" + taskSession.getUserId() + "_" + taskSession.getTaskId() + ".txt";
-        outputFiles.add(outputFile);
-        filesToExecute.add(executeFile);
-        try {
+        for (Task task : taskSession) {
+            String executeFile = saveTaskToFile(task);
+            String outputFile = ServerConstants.PATH_TO_TASKS + "output_" + task.getUserId() + "_" + task.getTaskId() + ".txt";
+            outputFiles.add(outputFile);
+            filesToExecute.add(executeFile);
             try {
-                sleep(10000); // sleep for 50 sec - testing our tasks queue
+                try {
+                    sleep(50000); // sleep for 50 sec - testing our tasks queue
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                execution = runtime.exec("cmd /C call " + executeFile + " > " + outputFile,
+                        null,
+                        new File(ServerConstants.PATH_TO_TASKS));
+                execution.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            LOGGER.info("TASK {} COMPLETED", task.getTaskId());
+            ServerThread.getDatabaseOperations().setTaskIsCompleted(task.getTaskId(), readOutputFile(outputFile));
+            // TODO: remove next sleep
+            try {
+                sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            execution = runtime.exec("cmd /C call " + executeFile + " > " + outputFile, null, new File(ServerConstants.PATH_TO_TASKS));
-            execution.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
+            deleteFile(outputFile);
+            deleteFile(executeFile);
+            sendUpdateOfTaskSessionQueue("TASK COMPLETE QUEUE UPDATE\n");
         }
-        LOGGER.info("TASK {} COMPLETED", taskSession.getTaskId());
-        ServerThread.getDatabaseOperations().setTaskIsCompleted(taskSession.getTaskId(), readOutputFile(outputFile));
-        try {
-            sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        deleteFile(outputFile);
-        deleteFile(executeFile);
-        sendUpdateOfTaskSessionQueue("TASK COMPLETE QUEUE UPDATE\n");
     }
 
     public static void sendUpdateOfTaskSessionQueue(String message) {
