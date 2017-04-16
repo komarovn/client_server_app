@@ -44,7 +44,7 @@ public class PresenterManager<Controller> implements ResponseListener {
                     break;
                 case DLRESULT:
                     if (controller instanceof RemoteLauncherController) {
-
+                        processDownloadResult(response);
                     }
                     break;
             }
@@ -74,6 +74,11 @@ public class PresenterManager<Controller> implements ResponseListener {
             tasks.add(new CellView(taskName, taskId, userId));
         }
         ((RemoteLauncherController) controller).setTaskQueue(tasks);
+    }
+
+    private void processDownloadResult(Response response) {
+        byte[] data = (byte[]) response.getParameter(ClientConstants.RESULT_FILE);
+        ((RemoteLauncherController) controller).downloadResult(data);
     }
 
 }

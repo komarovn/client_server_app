@@ -6,7 +6,7 @@
  */
 package com.remotelauncher.server.data;
 
-public class TaskSession {
+public class Task {
 
     private String taskId;
     private String userId;
@@ -14,7 +14,7 @@ public class TaskSession {
     private byte[] task;
     private boolean isDone;
 
-    public TaskSession(String taskId, String userId, byte[] task) {
+    public Task(String taskId, String userId, byte[] task) {
         this.taskId = taskId;
         this.userId = userId;
         this.task = task;

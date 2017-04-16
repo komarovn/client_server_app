@@ -6,10 +6,7 @@
  */
 package com.remotelauncher.client;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class ControllerHelper {
 
@@ -22,5 +19,20 @@ public class ControllerHelper {
             e.printStackTrace();
         }
         return data;
+    }
+
+    public static void saveDataToFile(File file, byte[] data) {
+        try {
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+            try {
+                bufferedOutputStream.write(data);
+                bufferedOutputStream.flush();
+                bufferedOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
