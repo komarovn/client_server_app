@@ -118,6 +118,7 @@ public class RemoteLauncherController implements Initializable {
             public void handle(ActionEvent event) {
                 sendFile();
                 taskGroupsList.clear();
+                tasksList.clear();
             }
         });
         initFilterQueue();

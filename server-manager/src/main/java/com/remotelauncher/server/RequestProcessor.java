@@ -18,7 +18,9 @@ import com.remotelauncher.shared.TaskItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -112,7 +114,8 @@ public class RequestProcessor {
             byte[] data = taskItem.getData();
             String name = taskItem.getTaskName();
             String format = taskItem.getFileType();
-            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, name, userId, format);
+            SimpleDateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            String taskId = ServerThread.getDatabaseOperations().insertNewTask(data, name, userId, format, dateTime.format(new Date()));
             taskSession.add(new Task(taskId, userId, data));
         }
         SchedulerThread.addTaskSession(taskSession);
