@@ -118,6 +118,8 @@ public class RemoteLauncherController implements Initializable {
             public void handle(ActionEvent event) {
                 sendFile();
                 taskGroupsList.clear();
+                tasksList.clear();
+                validateCreateTask();
             }
         });
         initFilterQueue();
@@ -199,7 +201,19 @@ public class RemoteLauncherController implements Initializable {
 
     private void validateManageTask() {
         if (!taskNameManageTask.getText().isEmpty()) {
-            downloadResultFile.setDisable(false);
+            boolean isOk = false;
+            for (CellView task : taskQueueItems) {
+                if (task.getTaskName().equals(taskNameManageTask.getText()) &&
+                        task.getUserId().toString().equals(userId)) {
+                    isOk = true;
+                }
+            }
+            if (isOk) {
+                downloadResultFile.setDisable(false);
+            }
+            else {
+                downloadResultFile.setDisable(true);
+            }
         }
         else {
             downloadResultFile.setDisable(true);

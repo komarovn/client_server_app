@@ -64,13 +64,10 @@ public class ServerController implements Initializable {
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                stopServer.setDisable(true);
                 statusLabel.setText(SERVER_SHUTTING_DOWN);
                 statusColor.setStyle("-fx-background-color: yellow; -fx-background-radius: 20px");
-                // TODO: stop server in new thread; set up shutting down state.
                 mainApp.stopTCPServer();
-                statusLabel.setText(SERVER_OFF);
-                statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
-                setServerState(false);
             }
         });
         consoleOutput.textProperty().addListener(new ChangeListener<String>() {
@@ -98,6 +95,12 @@ public class ServerController implements Initializable {
     public void setServerState(boolean isRunning) {
         startServer.setDisable(isRunning);
         stopServer.setDisable(!isRunning);
+    }
+
+    public void setStatusStopped() {
+        statusLabel.setText(SERVER_OFF);
+        statusColor.setStyle("-fx-background-color: red; -fx-background-radius: 20px");
+        setServerState(false);
     }
 
 }

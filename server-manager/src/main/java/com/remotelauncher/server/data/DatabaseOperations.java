@@ -119,13 +119,13 @@ public class DatabaseOperations {
         return false;
     }
 
-    public String insertNewTask(byte[] task, String name, String userId, String format) {
+    public String insertNewTask(byte[] task, String name, String userId, String format, String createdWhen) {
         String taskId = String.valueOf(Math.abs(UUID.randomUUID().hashCode()));
         try {
             Blob taskBlob = new SerialBlob(task);
             String query = "INSERT INTO remotelauncher.tasks (`task_id`, `name`, `task`, `is_completed`, `user_id`, " +
-                    "`format_type`) VALUES(?, ?, ?, 0, ?, ?)";
-            executeStatement(query, taskId, name, taskBlob, userId, format);
+                    "`format_type`, `created_when`) VALUES(?, ?, ?, 0, ?, ?, ?)";
+            executeStatement(query, taskId, name, taskBlob, userId, format, createdWhen);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -175,22 +175,25 @@ public class DatabaseOperations {
     public List<HashMap<String, Object>> getQueueUpdateOfTaskSessions(boolean isCompleted, String userId) {
         List<HashMap<String, Object>> result = new ArrayList<>();
         String query = "SELECT * FROM remotelauncher.tasks";
+        String orderBy = " ORDER BY created_when";
         ResultSet resultSet;
         if (userId != null) {
-            query += " WHERE user_id = ?";
+            query = query + " WHERE user_id = ?";
             if (!isCompleted) {
-                query += " and is_completed = ?";
+                query = query + " and is_completed = ?" + orderBy;
                 resultSet = executeQueryWithParams(query, userId, isCompleted);
             }
             else {
+                query+= orderBy;
                 resultSet = executeQueryWithParams(query, userId);
             }
         }
         else if (!isCompleted) {
-            query += " WHERE is_completed = ?";
+            query = query + " WHERE is_completed = ?" + orderBy;
             resultSet = executeQueryWithParams(query, isCompleted);
         }
         else {
+            query += orderBy;
             resultSet = executeSingleQuery(query);
         }
 

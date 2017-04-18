@@ -22,6 +22,7 @@ public class ServerManager extends Application {
 
     private final String SERVER_MANAGER = "Server Manager";
     private TCPServer tcpServer;
+    private ServerController controller;
 
     public ServerManager() {}
 
@@ -32,7 +33,7 @@ public class ServerManager extends Application {
         Parent root = loader.load();
         primaryStage.setTitle(SERVER_MANAGER);
         primaryStage.setScene(new Scene(root));
-        ServerController controller = loader.getController();
+        controller = loader.getController();
         controller.setMainApp(this);
 
         controller.setServerState(false);
@@ -56,7 +57,19 @@ public class ServerManager extends Application {
     }
 
     public void stopTCPServer() {
-        tcpServer.stopServer();
+        Thread stopThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                tcpServer.stopServer();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        controller.setStatusStopped();
+                    }
+                });
+            }
+        });
+        stopThread.start();
     }
 
 }
