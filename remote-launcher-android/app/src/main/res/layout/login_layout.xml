@@ -17,6 +17,12 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/loginStatusLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0" />
+
     <EditText
         android:id="@+id/username"
         android:layout_width="327dp"
@@ -43,4 +49,5 @@
         android:background="@color/colorPrimary"
         android:text="Connect"
         android:textColor="@android:color/background_light" />
+
 </LinearLayout>

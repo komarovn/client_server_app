@@ -7,11 +7,11 @@ import com.remotelauncher.shared.Request;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class LoginRequestTask extends AsyncTask<Request, Integer, String>{
+public class RequestTask extends AsyncTask<Request, Integer, String>{
     private Socket clientSocket;
     private ObjectOutputStream outputStream;
 
-    public LoginRequestTask(Socket socket, ObjectOutputStream outputStream) {
+    public RequestTask(Socket socket, ObjectOutputStream outputStream) {
         this.clientSocket = socket;
         this.outputStream = outputStream;
     }
