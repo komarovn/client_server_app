@@ -21,7 +21,15 @@
         android:id="@+id/loginStatusLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0" />
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:paddingLeft="30dp"
+        android:text="Name:" />
 
     <EditText
         android:id="@+id/username"
@@ -29,8 +37,15 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:paddingLeft="30dp"
+        android:text="Password:" />
 
     <EditText
         android:id="@+id/password"

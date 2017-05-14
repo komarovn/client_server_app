@@ -30,6 +30,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -46,12 +47,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText password;
     private TextView loginStatusLabel;
     private ListView tasksQueue;
+    private ArrayAdapter arrayAdapterForTasksQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_layout);
         init();
+
+        setContentView(R.layout.activity_main);
+        tasksQueue = (ListView) findViewById(R.id.taskQueue);
+        List<String> vals = new ArrayList<String>(Arrays.asList("a", "b", "c"));
+        arrayAdapterForTasksQueue = new ArrayAdapter(this, R.layout.listview_textview, R.id.textView3, vals);
+        tasksQueue.setAdapter(arrayAdapterForTasksQueue);
+
+        setContentView(R.layout.login_layout);
 
         Button connectButton = (Button) findViewById(R.id.connectButton);
         username = (EditText) findViewById(R.id.username);
@@ -115,9 +124,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openMainFrame() {
-        setContentView(R.layout.content_main);
-        tasksQueue = (ListView) findViewById(R.id.taskQueue);
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.activity_main);
         Request request = new Request();
         boolean showUncompletedTasks = false;
         boolean showMyTasksOnly = true;
@@ -128,11 +135,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setTaskQueue(List<CellView> tasks) {
+        setContentView(R.layout.activity_main);
+        tasksQueue = (ListView) findViewById(R.id.taskQueue);
+        tasksQueue.setAdapter(arrayAdapterForTasksQueue);
         List<String> values = new ArrayList<String>();
         for (CellView cellView : tasks) {
             values.add(cellView.getTaskName());
         }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.simple_list_view, values);
-        tasksQueue.setAdapter(arrayAdapter);
+        arrayAdapterForTasksQueue.clear();
+        arrayAdapterForTasksQueue.addAll(values);
+        arrayAdapterForTasksQueue.notifyDataSetChanged();
     }
 }
